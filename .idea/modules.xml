@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ssserializer.iml" filepath="$PROJECT_DIR$/.idea/modules/ssserializer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ssserializer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/ssserializer-build.iml" />
+    </modules>
+  </component>
+</project>
