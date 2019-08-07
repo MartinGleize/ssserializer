@@ -10,6 +10,7 @@ object TypeMapper {
     longDetector -> Long,
     intDetector -> Int,
     booleanDetector -> Boolean,
+    stringDetector -> String,
     seqDetector -> Seq,
     mapDetector -> Map,
     caseClassDetector -> CaseClass

@@ -1,0 +1,27 @@
+package ssserializer.serializers.json
+
+import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
+
+import ssserializer.serializers.{AnySerializer, Serializer}
+
+import scala.reflect.runtime.universe
+
+class SeqSerializer extends Serializer[Seq[_]] {
+
+  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, anySerializer: AnySerializer): Unit = {
+    val writer = new BufferedWriter(new OutputStreamWriter(dest))
+    writer.write("[")
+    val elementType = t.typeArgs.head
+    val size = data.size
+    for ((element, index) <- data.zipWithIndex) {
+      anySerializer.serialize(element, elementType, dest)
+      if (index != size - 1) {
+        writer.write(",")
+      }
+    }
+    writer.write("]")
+    writer.flush()
+  }
+
+  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream): Unit = () // TODO: throw some custom exception
+}
