@@ -19,10 +19,10 @@ class SeqDeserializerTest extends FlatSpec with Matchers {
     }
   }
 
-  def getSequence(s: String): Vector[Int] = {
+  def getSequence(s: String): Seq[Int] = {
     val deserializer = new JsonDeserializer()
-    val t = typeOf[Vector[Int]]
+    val t = typeOf[Seq[Int]]
     val res = deserializer.deserialize(t, new JsonReader(new StringReader(s)))
-    res.asInstanceOf[Vector[Int]]
+    res.asInstanceOf[Seq[Int]]
   }
 }
