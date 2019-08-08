@@ -10,9 +10,10 @@ class SeqSerializer extends Serializer[Seq[_]] {
 
   override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
-    writer.write("[")
     val elementType = t.typeArgs.head
     val size = data.size
+    writer.write("{\"size\":" + size + ",\"seq\":")
+    writer.write("[")
     for ((element, index) <- data.zipWithIndex) {
       parentSerializer.serialize(element, elementType, dest)
       if (index != size - 1) {
@@ -20,6 +21,7 @@ class SeqSerializer extends Serializer[Seq[_]] {
       }
     }
     writer.write("]")
+    writer.write("}")
     writer.flush()
   }
 

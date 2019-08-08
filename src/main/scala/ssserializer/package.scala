@@ -10,6 +10,6 @@ package object ssserializer {
 
   def serialize[T : TypeTag](data: T, dest: OutputStream)(implicit serializer: AnySerializer): Unit = ()
 
-  def deserialize[T : TypeTag](src: InputStream)(implicit deserializer: AnyDeserializer): T = deserializer.deserialize(typeOf[T], src).asInstanceOf[T]
+  def deserialize[T : TypeTag](src: InputStream)(implicit deserializer: AnyDeserializer[InputStream]): T = deserializer.deserialize(typeOf[T], src).asInstanceOf[T]
 
 }

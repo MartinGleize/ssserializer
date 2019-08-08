@@ -1,6 +1,6 @@
-package ssserializer.deserializers
+package ssserializer.deserializers.json
 
-package object json {
+package object defaults {
 
   val doubleDeserializer: NumberStringDeserializer[Double] = _.toDouble
 
@@ -13,4 +13,11 @@ package object json {
 
     override def parse(stringResult: String): Boolean = stringResult.toBoolean
   }
+
+  val stringDeserializer: StringParseDeserializer[String] = new StringParseDeserializer[String] {
+    override def read(jsonReader: JsonReader): String = jsonReader.readJsonString()
+
+    override def parse(stringResult: String): String = stringResult
+  }
+
 }

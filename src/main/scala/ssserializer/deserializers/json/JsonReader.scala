@@ -35,7 +35,7 @@ class JsonReader(val in: Reader) {
   }
 
   def readJsonNumber(): String = {
-    val res = scanner.next(JsonReader.NUMBER)
+    val res = next(JsonReader.NUMBER)
     res.toString
   }
 
@@ -56,7 +56,11 @@ class JsonReader(val in: Reader) {
     res
   }
 
-  private def skipAfter(pattern: Pattern): Unit = {
+  private def next(pattern: Pattern): String = {
+    scanner.findWithinHorizon(pattern, 0)
+  }
+
+  def skipAfter(pattern: Pattern): Unit = {
     scanner.findWithinHorizon(pattern, 0)
   }
 
@@ -75,6 +79,12 @@ object JsonReader {
   val NUMBER = Pattern.compile("-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?")
   val BOOLEAN = Pattern.compile("(true)|(false)")
   val COLON = Pattern.compile(":")
+  val CURLY_OPEN = Pattern.compile("\\{")
+  val CURLY_CLOSE = Pattern.compile("\\}")
+  val BRACKET_OPEN = Pattern.compile("\\[")
+  val BRACKET_CLOSE = Pattern.compile("\\]")
+
+  def p(s: String): Pattern = Pattern.compile(s)
 }
 
 object JsonReaderApp extends App {

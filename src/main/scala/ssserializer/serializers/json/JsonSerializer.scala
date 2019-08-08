@@ -11,6 +11,8 @@ class JsonSerializer extends AnySerializer {
 
   override val booleanSerializer: Serializer[Boolean] = null // TODO: throw custom exception for non-implemented serializers
 
+  override val stringSerializer: Serializer[String] = new StringSerializer()
+
   override val seqSerializer: Serializer[Seq[_]] = new SeqSerializer()
 
   override val mapSerializer: Serializer[Map[_, _]] = new MapSerializer()

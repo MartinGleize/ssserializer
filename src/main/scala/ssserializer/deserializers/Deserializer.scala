@@ -1,13 +1,12 @@
 package ssserializer.deserializers
 
-import java.io.InputStream
 import scala.reflect.runtime.universe._
 
-trait Deserializer[T] {
+trait Deserializer[T, Input] {
 
-  def deserialize(t: Type, src: InputStream, parentDeserializer: AnyDeserializer): T = {
+  def deserialize(t: Type, src: Input, parentDeserializer: AnyDeserializer[Input]): T = {
     deserialize(t, src)
   }
 
-  def deserialize(t: Type, src: InputStream): T
+  def deserialize(t: Type, src: Input): T
 }

@@ -21,6 +21,8 @@ trait AnySerializer extends Serializer[Any] {
         intSerializer.serialize(data.asInstanceOf[Int], t, dest, this)
       case Boolean =>
         booleanSerializer.serialize(data.asInstanceOf[Boolean], t, dest, this)
+      case String =>
+        stringSerializer.serialize(data.asInstanceOf[String], t, dest, this)
       case Seq =>
         seqSerializer.serialize(data.asInstanceOf[Seq[_]], t, dest, this)
       case Map =>
@@ -42,6 +44,8 @@ trait AnySerializer extends Serializer[Any] {
   def intSerializer: Serializer[Int]
 
   def booleanSerializer: Serializer[Boolean]
+
+  def stringSerializer: Serializer[String]
 
   def seqSerializer: Serializer[Seq[_]]
 

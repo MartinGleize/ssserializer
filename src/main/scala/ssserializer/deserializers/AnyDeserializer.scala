@@ -7,9 +7,9 @@ import ssserializer.typing._
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
-trait AnyDeserializer extends Deserializer[Any] {
+trait AnyDeserializer[Input] extends Deserializer[Any, Input] {
 
-  override def deserialize(t: Type, src: InputStream): Any = TypeMapper.map(t) match {
+  override def deserialize(t: Type, src: Input): Any = TypeMapper.map(t) match {
     case None => throw new RuntimeException("Type not handled") // TODO: throw some custom exception
     case Some(serializableType) => serializableType match {
       case Double =>
@@ -20,6 +20,8 @@ trait AnyDeserializer extends Deserializer[Any] {
         intDeserializer.deserialize(t, src, this)
       case Boolean =>
         booleanDeserializer.deserialize(t, src, this)
+      case String =>
+        stringDeserializer.deserialize(t, src, this)
       case Seq =>
         seqDeserializer.deserialize(t, src, this)
       case Map =>
@@ -29,23 +31,25 @@ trait AnyDeserializer extends Deserializer[Any] {
     }
   }
 
-  override def deserialize(t: universe.Type, src: InputStream, parentDeserializer: AnyDeserializer): Unit = {
+  override def deserialize(t: universe.Type, src: Input, parentDeserializer: AnyDeserializer[Input]): Unit = {
     // TODO: throw exception to warn that this shouldn't be used on anyserializer
     ()
   }
 
-  def doubleDeserializer: Deserializer[Double]
+  def doubleDeserializer: Deserializer[Double, Input]
 
-  def longDeserializer: Deserializer[Long]
+  def longDeserializer: Deserializer[Long, Input]
 
-  def intDeserializer: Deserializer[Int]
+  def intDeserializer: Deserializer[Int, Input]
 
-  def booleanDeserializer: Deserializer[Boolean]
+  def booleanDeserializer: Deserializer[Boolean, Input]
 
-  def seqDeserializer: Deserializer[Seq[_]]
+  def stringDeserializer: Deserializer[String, Input]
 
-  def mapDeserializer: Deserializer[Map[_, _]]
+  def seqDeserializer: Deserializer[Seq[_], Input]
 
-  def caseClassDeserializer: Deserializer[Product]
+  def mapDeserializer: Deserializer[Map[_, _], Input]
+
+  def caseClassDeserializer: Deserializer[Product, Input]
 
 }
