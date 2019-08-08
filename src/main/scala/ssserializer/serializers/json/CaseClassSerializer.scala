@@ -9,7 +9,7 @@ import scala.reflect.runtime.universe
 
 class CaseClassSerializer extends Serializer[Product] {
 
-  override def serialize(data: Product, t: universe.Type, dest: OutputStream, anySerializer: AnySerializer): Unit = {
+  override def serialize(data: Product, t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
     val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
@@ -18,8 +18,8 @@ class CaseClassSerializer extends Serializer[Product] {
     writer.write("{")
     for ((arg, index) <- productArgs.zipWithIndex) {
       val argName = jsonifyArgName(orderedArgs(index)._1.toString)
-      writer.write(s"\"$argName\":")
-      anySerializer.serialize(arg, orderedArgs(index)._2, dest)
+      writer.write("\"" + argName + "\":")
+      parentSerializer.serialize(arg, orderedArgs(index)._2, dest)
       if (index != size - 1)
         writer.write(",")
     }

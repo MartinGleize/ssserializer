@@ -5,7 +5,7 @@ import detectors._
 
 object TypeMapper {
 
-  private val detectors: Seq[(Detector, SerializableType)] = Seq(
+  private val detectors: Seq[(Detector, SerializableType)] = Vector(
     doubleDetector -> Double,
     longDetector -> Long,
     intDetector -> Int,

@@ -8,13 +8,13 @@ import scala.reflect.runtime.universe
 
 class SeqSerializer extends Serializer[Seq[_]] {
 
-  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, anySerializer: AnySerializer): Unit = {
+  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     writer.write("[")
     val elementType = t.typeArgs.head
     val size = data.size
     for ((element, index) <- data.zipWithIndex) {
-      anySerializer.serialize(element, elementType, dest)
+      parentSerializer.serialize(element, elementType, dest)
       if (index != size - 1) {
         writer.write(",")
       }

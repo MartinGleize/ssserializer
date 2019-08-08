@@ -8,7 +8,7 @@ import scala.reflect.runtime.universe
 
 class MapSerializer extends Serializer[Map[_, _]] {
 
-  override def serialize(data: Map[_, _], t: universe.Type, dest: OutputStream, anySerializer: AnySerializer): Unit = {
+  override def serialize(data: Map[_, _], t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     writer.write("[")
     val keyType = t.typeArgs(0)
@@ -16,9 +16,9 @@ class MapSerializer extends Serializer[Map[_, _]] {
     val size = data.size
     for (((key, value), index) <- data.zipWithIndex) {
       writer.write("{\"key\":")
-      anySerializer.serialize(key, keyType, dest)
+      parentSerializer.serialize(key, keyType, dest)
       writer.write(",\"value\":")
-      anySerializer.serialize(value, valueType, dest)
+      parentSerializer.serialize(value, valueType, dest)
       writer.write("}")
       if (index != size - 1) {
         writer.write(",")

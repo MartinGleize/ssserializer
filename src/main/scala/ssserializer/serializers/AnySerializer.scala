@@ -30,7 +30,7 @@ trait AnySerializer extends Serializer[Any] {
     }
   }
 
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, anySerializer: AnySerializer): Unit = {
+  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
     // TODO: throw exception to warn that this shouldn't be used on anyserializer
     ()
   }
