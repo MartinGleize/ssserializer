@@ -18,5 +18,5 @@ class JsonDeserializer extends AnyDeserializer[JsonReader] {
 
   override def mapDeserializer: Deserializer[Map[_, _], JsonReader] = new MapDeserializer()
 
-  override def caseClassDeserializer: Deserializer[Product, JsonReader] = throw new RuntimeException("Not implemented")
+  override def caseClassDeserializer: Deserializer[Product, JsonReader] = new CaseClassDeserializer()
 }

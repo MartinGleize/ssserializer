@@ -7,6 +7,10 @@ import ssserializer.serializers.{AnySerializer, Serializer}
 
 import scala.reflect.runtime.universe
 
+/**
+ * Case class serializer. A current limitation is that it doesn't handle inner case classes (which could typically be
+ * considered standalone classes in most cases).
+ */
 class CaseClassSerializer extends Serializer[Product] {
 
   override def serialize(data: Product, t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
