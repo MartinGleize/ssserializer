@@ -12,11 +12,11 @@ class JsonDeserializer extends AnyDeserializer[JsonReader] {
 
   override val booleanDeserializer: Deserializer[Boolean, JsonReader] = defaults.booleanDeserializer
 
-  override def stringDeserializer: Deserializer[String, JsonReader] = throw new RuntimeException("Not implemented")
+  override def stringDeserializer: Deserializer[String, JsonReader] = defaults.stringDeserializer
 
   override val seqDeserializer: Deserializer[Seq[_], JsonReader] = new SeqDeserializer()
 
-  override def mapDeserializer: Deserializer[Map[_, _], JsonReader] = throw new RuntimeException("Not implemented")
+  override def mapDeserializer: Deserializer[Map[_, _], JsonReader] = new MapDeserializer()
 
   override def caseClassDeserializer: Deserializer[Product, JsonReader] = throw new RuntimeException("Not implemented")
 }
