@@ -1,22 +1,22 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.{AnyDeserializer, Deserializer}
+import ssserializer.deserializers.AnyDeserializer
 
 class JsonDeserializer extends AnyDeserializer[JsonReader] {
 
-  override val doubleDeserializer: Deserializer[Double, JsonReader] = defaults.doubleDeserializer
+  override val doubleDeserializer: Deserializer[Double] = defaults.doubleDeserializer
 
-  override val longDeserializer: Deserializer[Long, JsonReader] = defaults.longDeserializer
+  override val longDeserializer: Deserializer[Long] = defaults.longDeserializer
 
-  override val intDeserializer: Deserializer[Int, JsonReader] = defaults.intDeserializer
+  override val intDeserializer: Deserializer[Int] = defaults.intDeserializer
 
-  override val booleanDeserializer: Deserializer[Boolean, JsonReader] = defaults.booleanDeserializer
+  override val booleanDeserializer: Deserializer[Boolean] = defaults.booleanDeserializer
 
-  override def stringDeserializer: Deserializer[String, JsonReader] = defaults.stringDeserializer
+  override def stringDeserializer: Deserializer[String] = defaults.stringDeserializer
 
-  override val seqDeserializer: Deserializer[Seq[_], JsonReader] = new SeqDeserializer()
+  override val seqDeserializer: Deserializer[Seq[_]] = new SeqDeserializer()
 
-  override def mapDeserializer: Deserializer[Map[_, _], JsonReader] = new MapDeserializer()
+  override def mapDeserializer: Deserializer[Map[_, _]] = new MapDeserializer()
 
-  override def caseClassDeserializer: Deserializer[Product, JsonReader] = new CaseClassDeserializer()
+  override def caseClassDeserializer: Deserializer[Product] = new CaseClassDeserializer()
 }

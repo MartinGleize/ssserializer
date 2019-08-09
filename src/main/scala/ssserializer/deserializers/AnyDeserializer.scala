@@ -9,7 +9,7 @@ import scala.reflect.runtime.universe._
 
 trait AnyDeserializer[Input] extends Deserializer[Any, Input] {
 
-  override def deserialize(t: Type, src: Input): Any = TypeMapper.map(t) match {
+  override def deserialize(t: Type, src: Input, parentDeserializer: AnyDeserializer[Input] = null): Any = TypeMapper.map(t) match {
     case None => throw new RuntimeException("Type not handled") // TODO: throw some custom exception
     case Some(serializableType) => serializableType match {
       case Double =>
@@ -29,11 +29,6 @@ trait AnyDeserializer[Input] extends Deserializer[Any, Input] {
       case CaseClass =>
         caseClassDeserializer.deserialize(t, src, this)
     }
-  }
-
-  override def deserialize(t: universe.Type, src: Input, parentDeserializer: AnyDeserializer[Input]): Unit = {
-    // TODO: throw exception to warn that this shouldn't be used on anyserializer
-    ()
   }
 
   def doubleDeserializer: Deserializer[Double, Input]

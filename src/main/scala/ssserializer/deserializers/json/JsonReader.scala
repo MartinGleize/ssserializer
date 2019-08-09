@@ -78,11 +78,17 @@ class JsonReader(val in: Reader) {
   /** Tries to consume the next token (has to match the pattern), returns true if it was successful */
   def tryToConsumeNextToken(pattern: Pattern): Boolean = {
     try {
+      // TODO: check this for performance, this seems inefficient
+      consumeNextWhitespaces()
       scanner.skip(pattern)
       true
     } catch {
       case _: NoSuchElementException => false
     }
+  }
+
+  private def consumeNextWhitespaces(): Unit = {
+    while (scanner.findWithinHorizon(JsonReader.WHITESPACE, 1) != null) { }
   }
 
   private def reset(): Unit = {
@@ -105,6 +111,8 @@ object JsonReader {
   val BRACKET_OPEN = Pattern.compile("\\[")
   val BRACKET_CLOSE = Pattern.compile("\\]")
   val COMMA = Pattern.compile(",")
+  val NULL = Pattern.compile("null")
+  val WHITESPACE = Pattern.compile("[\\x20\\x09\\x0A\\x0D]")
 
   def p(s: String): Pattern = Pattern.compile(s)
 }

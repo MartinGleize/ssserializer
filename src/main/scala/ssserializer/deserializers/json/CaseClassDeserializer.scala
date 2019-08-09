@@ -1,6 +1,6 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.{AnyDeserializer, Deserializer}
+import ssserializer.deserializers.AnyDeserializer
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -11,9 +11,9 @@ import scala.reflect.runtime.universe._
  *
  * Does not handle inner case classes for the moment (likely won't ever support it)
  */
-class CaseClassDeserializer extends Deserializer[Product, JsonReader] {
+class CaseClassDeserializer extends Deserializer[Product] {
 
-  override def deserialize(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Product = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Product = {
     val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
     val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
     jsonReader.skipAfter(JsonReader.CURLY_OPEN)
@@ -32,8 +32,6 @@ class CaseClassDeserializer extends Deserializer[Product, JsonReader] {
     // build the case class object with this list of arguments
     newProduct(t, args.toSeq)
   }
-
-  override def deserialize(t: Type, jsonReader: JsonReader): Product = null // TODO: relevant exception here
 
   def newProduct(t: Type, args: Seq[_]): Product = {
     val productFactory = new ReflectionHelpers.CaseClassFactory[Product](t)

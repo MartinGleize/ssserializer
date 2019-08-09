@@ -1,14 +1,14 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.{AnyDeserializer, Deserializer}
+import ssserializer.deserializers.AnyDeserializer
 
 import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
-class MapDeserializer extends Deserializer[Map[_, _], JsonReader] {
+class MapDeserializer extends Deserializer[Map[_, _]] {
 
-  override def deserialize(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Map[_, _] = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Map[_, _] = {
     val keyType = t.typeArgs(0)
     val valueType = t.typeArgs(1)
     // TODO: handle null
@@ -45,5 +45,4 @@ class MapDeserializer extends Deserializer[Map[_, _], JsonReader] {
     }
   }
 
-  override def deserialize(t: Type, src: JsonReader): Map[_, _] = null // TODO: throw relevant exception
 }

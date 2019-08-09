@@ -5,7 +5,8 @@ class SeqDeserializerTest extends JsonDeserializerSpec {
   "A JSON SeqDeserializer" should "deserialize JSON sequences correctly (with simple parameter types)" in {
     val checksInt: Seq[(String, Seq[Int])] = Seq(
       " [1,2]" -> Seq(1, 2),
-      "[1,2, 3]" -> Seq(1, 2 ,3)
+      "[1,2, 3]" -> Seq(1, 2 ,3),
+      "null" -> null
     )
     val checksBoolean = Seq(
       "[true, false, false]" -> Seq(true, false, false)

@@ -1,13 +1,13 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.{AnyDeserializer, Deserializer}
+import ssserializer.deserializers.AnyDeserializer
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe
 
-class SeqDeserializer extends Deserializer[Seq[_], JsonReader] {
+class SeqDeserializer extends Deserializer[Seq[_]] {
 
-  override def deserialize(t: universe.Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Seq[_] = {
+  override def deserializeNonNull(t: universe.Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Seq[_] = {
     val elementType = t.typeArgs.head
     /*
     jsonReader.skipAfter(JsonReader.CURLY_OPEN)
@@ -51,6 +51,4 @@ class SeqDeserializer extends Deserializer[Seq[_], JsonReader] {
       Some(element)
     }
   }
-
-  override def deserialize(t: universe.Type, src: JsonReader): Seq[_] = null // TODO: throw relevant exception
 }

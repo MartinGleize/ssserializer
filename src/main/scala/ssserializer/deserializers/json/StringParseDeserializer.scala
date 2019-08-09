@@ -1,12 +1,12 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.Deserializer
+import ssserializer.deserializers.AnyDeserializer
 
 import scala.reflect.runtime.universe
 
-trait StringParseDeserializer[T] extends Deserializer[T, JsonReader] {
+trait StringParseDeserializer[T] extends Deserializer[T] {
 
-  override def deserialize(t: universe.Type, src: JsonReader): T = {
+  override def deserializeNonNull(t: universe.Type, src: JsonReader, parentDeserializer: AnyDeserializer[JsonReader] = null): T = {
     val res = read(src)
     parse(res)
   }
