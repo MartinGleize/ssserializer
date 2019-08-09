@@ -3,7 +3,7 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: bitbucketpipelines/scala-sbt:scala-2.13
+image: hseeberger/scala-sbt:8u212_1.2.8_2.13.0
 
 pipelines:
   default:
