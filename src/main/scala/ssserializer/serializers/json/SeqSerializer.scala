@@ -12,7 +12,6 @@ class SeqSerializer extends Serializer[Seq[_]] {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     val elementType = t.typeArgs.head
     val size = data.size
-    writer.write("{\"size\":" + size + ",\"seq\":")
     writer.write("[")
     for ((element, index) <- data.zipWithIndex) {
       parentSerializer.serialize(element, elementType, dest)
@@ -21,7 +20,6 @@ class SeqSerializer extends Serializer[Seq[_]] {
       }
     }
     writer.write("]")
-    writer.write("}")
     writer.flush()
   }
 

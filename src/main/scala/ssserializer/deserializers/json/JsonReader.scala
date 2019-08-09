@@ -1,12 +1,18 @@
 package ssserializer.deserializers.json
 
 import java.io.{Reader, StringReader}
-import java.nio.charset.Charset
-import java.util.Scanner
+import java.util.{InputMismatchException, Scanner}
 import java.util.regex.Pattern
 
 import org.apache.commons.text.StringEscapeUtils
 
+/**
+ * Provides facilities to read JSON values in any Reader (often with an underlying InputStream).
+ * Uses Scanner so Scanner-related restrictions apply (for example no two JsonReader reading on the same stream,
+ * Scanner consumes the underlying stream so the behavior of a second Scanner reading is undefined).
+ *
+ * @param in
+ */
 class JsonReader(val in: Reader) {
 
   def this(s: String) { this(new StringReader(s)) }
@@ -17,12 +23,14 @@ class JsonReader(val in: Reader) {
     scanner
   }
 
+  /** Read the name of a name/value pair (consumes the colon ':' character too) */
   def readJsonName(): String = {
     val res = readJsonString()
     skipAfter(JsonReader.COLON)
     res
   }
 
+  /** Read a JSON string value */
   def readJsonString(): String = {
     // find the next start of a string
     skipAfter(JsonReader.STRING_START)
@@ -34,13 +42,15 @@ class JsonReader(val in: Reader) {
     StringEscapeUtils.unescapeJson(res)
   }
 
+  /** Read a JSON numeric value */
   def readJsonNumber(): String = {
     val res = next(JsonReader.NUMBER)
     res.toString
   }
 
+  /** Read a JSON boolean value */
   def readJsonBoolean(): String = {
-    scanner.next(JsonReader.BOOLEAN)
+    next(JsonReader.BOOLEAN)
   }
 
   private def stringUntil(pattern: Pattern): String = {
@@ -60,8 +70,19 @@ class JsonReader(val in: Reader) {
     scanner.findWithinHorizon(pattern, 0)
   }
 
+  /** Jumps to the pattern and consumes it (ignores tokens in-between) */
   def skipAfter(pattern: Pattern): Unit = {
     scanner.findWithinHorizon(pattern, 0)
+  }
+
+  /** Tries to consume the next token (has to match the pattern), returns true if it was successful */
+  def tryToConsumeNextToken(pattern: Pattern): Boolean = {
+    try {
+      scanner.skip(pattern)
+      true
+    } catch {
+      case _: NoSuchElementException => false
+    }
   }
 
   private def reset(): Unit = {
@@ -83,6 +104,7 @@ object JsonReader {
   val CURLY_CLOSE = Pattern.compile("\\}")
   val BRACKET_OPEN = Pattern.compile("\\[")
   val BRACKET_CLOSE = Pattern.compile("\\]")
+  val COMMA = Pattern.compile(",")
 
   def p(s: String): Pattern = Pattern.compile(s)
 }

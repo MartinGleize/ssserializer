@@ -15,7 +15,7 @@ class JsonReaderTest extends FlatSpec with Matchers {
     }
   }
 
-  "A JsonReader" should "read JSON name/value pairs correctly" in {
+  it should "read JSON name/value pairs correctly" in {
     val nameValues: Seq[(String, JsonReader => String, (String, String))] = Seq(
       ("\"key1\":3.1416", _.readJsonNumber(), ("key1", "3.1416")),
       ("\"key2\" : 0.2736", _.readJsonNumber(), ("key2", "0.2736")),
