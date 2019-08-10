@@ -1,7 +1,7 @@
 package ssserializer.deserializers.json
 
 import scala.reflect.runtime.universe._
-import ssserializer.deserializers.AnyDeserializer
+import ssserializer.deserializers.MasterDeserializer
 
 /**
  * Overrides the Deserializer trait in the "deserializers" with JSON specific processing, such as handling of null.
@@ -9,9 +9,9 @@ import ssserializer.deserializers.AnyDeserializer
  */
 trait Deserializer[T] extends ssserializer.deserializers.Deserializer[T, JsonReader] {
 
-  def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader] = null): T
+  def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader] = null): T
 
-  override def deserialize(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader] = null): T = {
+  override def deserialize(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader] = null): T = {
     // first try to read a null value
     if (jsonReader.tryToConsumeNextToken(JsonReader.NULL)) {
       // TODO: check that this is not TOO dirty, this code branch shouldn't be reachable on non-nullable types

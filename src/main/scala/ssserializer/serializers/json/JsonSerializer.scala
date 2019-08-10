@@ -1,8 +1,8 @@
 package ssserializer.serializers.json
 
-import ssserializer.serializers.{AnySerializer, Serializer}
+import ssserializer.serializers.{MasterSerializer, Serializer}
 
-class JsonSerializer extends AnySerializer {
+class JsonSerializer extends MasterSerializer {
   override val doubleSerializer: Serializer[Double] = new ToStringSerializer[Double]()
 
   override val longSerializer: Serializer[Long] = new ToStringSerializer[Long]()

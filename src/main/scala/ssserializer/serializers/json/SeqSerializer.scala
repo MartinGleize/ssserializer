@@ -2,13 +2,13 @@ package ssserializer.serializers.json
 
 import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
 
-import ssserializer.serializers.{AnySerializer, Serializer}
+import ssserializer.serializers.{MasterSerializer, Serializer}
 
 import scala.reflect.runtime.universe
 
 class SeqSerializer extends Serializer[Seq[_]] {
 
-  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
+  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     val elementType = t.typeArgs.head
     val size = data.size

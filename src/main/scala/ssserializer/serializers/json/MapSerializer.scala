@@ -2,13 +2,13 @@ package ssserializer.serializers.json
 
 import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
 
-import ssserializer.serializers.{AnySerializer, Serializer}
+import ssserializer.serializers.{MasterSerializer, Serializer}
 
 import scala.reflect.runtime.universe
 
 class MapSerializer extends Serializer[Map[_, _]] {
 
-  override def serialize(data: Map[_, _], t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
+  override def serialize(data: Map[_, _], t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     writer.write("[")
     val keyType = t.typeArgs(0)

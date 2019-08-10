@@ -20,4 +20,6 @@ package object defaults {
     override def parse(stringResult: String): String = stringResult
   }
 
+  val seqDeserializer: SeqDeserializer[Seq[_]] = _.toList
+
 }

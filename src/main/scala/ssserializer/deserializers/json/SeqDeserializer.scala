@@ -1,45 +1,29 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.AnyDeserializer
+import ssserializer.deserializers.MasterDeserializer
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.reflect.runtime.universe
+import scala.reflect.runtime.universe._
 
-class SeqDeserializer extends Deserializer[Seq[_]] {
+trait SeqDeserializer[T <: Seq[_]] extends Deserializer[T] {
 
-  override def deserializeNonNull(t: universe.Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Seq[_] = {
+  def constructFinalSequence(res: mutable.Seq[_]): T
+
+  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): T = {
     val elementType = t.typeArgs.head
-    /*
-    jsonReader.skipAfter(JsonReader.CURLY_OPEN)
-    // read the size
-    val sizeName = jsonReader.readJsonName() // TODO: check that it's "size"
-    val sizeString = jsonReader.readJsonNumber()
-    val size = sizeString.toInt
-    jsonReader.skipAfter(JsonReader.p(","))
-    val seqString = jsonReader.readJsonName() // check that it's "seq"
-     */
-    // TODO: handle null
     jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[Any]()
-    /*
-    for (i <- 1 to size) {
-      val element = parentDeserializer.deserialize(elementType, jsonReader)
-      res += element
-      jsonReader.skipAfter(JsonReader.p(","))
-    }
-    */
     var potentialElement: Option[Any] = null
     while ({potentialElement = deserializeNextElement(elementType, jsonReader, parentDeserializer); potentialElement.isDefined}) {
       val element = potentialElement.get
       res += element
     }
-    //jsonReader.skipAfter(JsonReader.CURLY_CLOSE)
     // TODO: this is where we would change things to construct objects of precise subclasses like List vs Vector
-    res.toList
+    constructFinalSequence(res)
   }
 
-  def deserializeNextElement(elementType: universe.Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Option[Any] = {
-    // TODO: handle null here
+  def deserializeNextElement(elementType: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Option[Any] = {
     // first try to look for the end of the JSON array
     if (jsonReader.tryToConsumeNextToken(JsonReader.BRACKET_CLOSE)) {
       None

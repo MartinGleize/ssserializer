@@ -16,8 +16,10 @@ object TypeMapper {
     caseClassDetector -> CaseClass
   )
 
-  def map(t: Type): Option[SerializableType] = {
-    detectors
+  def map(t: Type): Option[SerializableType] = map(t, detectors)
+
+  def map[E](t: Type, detectedObjects: Seq[(Detector, E)]): Option[E] = {
+    detectedObjects
       .find { case (detector, _) => detector.isCompatible(t) }
       .map(_._2)
   }

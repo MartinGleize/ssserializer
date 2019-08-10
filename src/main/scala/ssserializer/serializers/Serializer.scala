@@ -5,7 +5,7 @@ import scala.reflect.runtime.universe._
 
 trait Serializer[T] {
 
-  def serialize(data: T, t: Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
+  def serialize(data: T, t: Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
     serialize(data, t, dest)
   }
 

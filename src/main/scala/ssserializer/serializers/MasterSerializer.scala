@@ -8,7 +8,7 @@ import ssserializer.typing._
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
-trait AnySerializer extends Serializer[Any] {
+trait MasterSerializer extends Serializer[Any] {
 
   override def serialize(data: Any, t: Type, dest: OutputStream): Unit = TypeMapper.map(t) match {
     case None => throw new RuntimeException("Type not handled") // TODO: throw some custom exception
@@ -32,7 +32,7 @@ trait AnySerializer extends Serializer[Any] {
     }
   }
 
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: AnySerializer): Unit = {
+  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
     // TODO: throw exception to warn that this shouldn't be used on anyserializer
     ()
   }

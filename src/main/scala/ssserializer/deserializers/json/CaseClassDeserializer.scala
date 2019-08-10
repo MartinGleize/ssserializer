@@ -1,6 +1,6 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.AnyDeserializer
+import ssserializer.deserializers.MasterDeserializer
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -13,7 +13,7 @@ import scala.reflect.runtime.universe._
  */
 class CaseClassDeserializer extends Deserializer[Product] {
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: AnyDeserializer[JsonReader]): Product = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Product = {
     val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
     val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
     jsonReader.skipAfter(JsonReader.CURLY_OPEN)
