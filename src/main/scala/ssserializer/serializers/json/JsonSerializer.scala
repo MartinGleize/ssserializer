@@ -14,6 +14,7 @@ class JsonSerializer extends MasterSerializer[BufferedWriter] {
     intDetector -> new ToStringSerializer(),
     booleanDetector -> new ToStringSerializer(),
     stringDetector -> new StringSerializer(),
+    optionDetector -> new OptionSerializer(),
     seqDetector -> new SeqSerializer(),
     mapDetector -> new MapSerializer(),
     caseClassDetector -> new CaseClassSerializer()

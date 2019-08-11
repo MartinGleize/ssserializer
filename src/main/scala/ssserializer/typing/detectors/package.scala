@@ -35,5 +35,7 @@ package object detectors {
 
   val mapDetector: Detector = Detector.ofBaseErasure(typeOf[Map[_, _]])
 
+  val optionDetector: Detector = Detector.ofBaseErasure(typeOf[Option[_]])
+
   val caseClassDetector: Detector = _.typeSymbol.asClass.isCaseClass
 }

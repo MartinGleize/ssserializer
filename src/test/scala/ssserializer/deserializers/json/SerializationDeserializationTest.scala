@@ -13,32 +13,49 @@ class SerializationDeserializationTest extends JsonDeserializerSpec {
   val serializer = new JsonSerializer()
   val deserializer = new JsonDeserializer()
 
-  val int0: Int = 0
-  val int1337: Int = 1337
-  val intn1: Int = -1
-  val double0: Double = 0.0
-  val double1337: Double = 1.337
-  val doublen1: Double = -1.0
-  val stringNull: String = null
-  val stringEmpty = ""
-  val stringSimple = "lol"
-  val stringToEscapse = "lol\"lol"
-  val stringWithLinebreak = "lol\nlol"
+  val intTests: Seq[Int] = Seq(0, 1337, -1)
+  val doubleTests: Seq[Double] = Seq(0.0, 1.337, -1.337)
+  val booleanTests: Seq[Boolean] = Seq(true, false)
+  val stringTests: Seq[String] = Seq(null, "", "lol", "lol\"lol", "lol\nlol")
+  val sequenceTests: Seq[Seq[Seq[String]]] = Seq(
+    Seq(),
+    Seq(Seq()),
+    Seq(Seq("")),
+    Seq(Seq("11", "12"), Seq("21"))
+  )
+  val mapTests: Seq[Map[String, Seq[Int]]] = Seq(
+    Map(),
+    Map("" -> Seq()),
+    Map("key1" -> Seq(11, 12), "key2" -> Seq(21, 22, 23), "" -> null)
+  )
+  val caseClassTests: Seq[Seq[Person]] = Seq(
+    Seq(),
+    Seq(null),
+    Seq(Person(null, -1)),
+    Seq(Person("John", 26)),
+    Seq(null, Person("Maria", 75), null, Person("Olaf", 54), Person("Bob", 40))
+  )
+  val caseClassMoreTests: Seq[BasketballTeam] = Seq(
+    null,
+    BasketballTeam("Lakers", Seq(Person("Lebron", 35), Person("AD", 24)))
+  )
+  val optionTests: Seq[Option[String]] = Seq(
+    null,
+    None,
+    Some(null),
+    Some("Haha")
+  )
 
   "A JSON serialization/deserialization sequence" should "return the same object" in {
-    test(int0)
-    test(int1337)
-    test(intn1)
-    test(double0)
-    test(double1337)
-    test(doublen1)
-    test(true)
-    test(false)
-    test(stringNull)
-    test(stringEmpty)
-    test(stringSimple)
-    test(stringToEscapse)
-    test(stringWithLinebreak)
+    intTests.foreach(test(_))
+    doubleTests.foreach(test(_))
+    booleanTests.foreach(test(_))
+    stringTests.foreach(test(_))
+    sequenceTests.foreach(test(_))
+    mapTests.foreach(test(_))
+    caseClassTests.foreach(test(_))
+    caseClassMoreTests.foreach((test(_)))
+    optionTests.foreach(test(_))
   }
 
   def test[T : TypeTag](data: T): Assertion = {
