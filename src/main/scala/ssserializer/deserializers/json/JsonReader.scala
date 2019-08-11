@@ -1,7 +1,7 @@
 package ssserializer.deserializers.json
 
 import java.io.{Reader, StringReader}
-import java.util.{InputMismatchException, Scanner}
+import java.util.Scanner
 import java.util.regex.Pattern
 
 import org.apache.commons.text.StringEscapeUtils
@@ -32,10 +32,24 @@ class JsonReader(val in: Reader) {
 
   /** Read a JSON string value */
   def readJsonString(): String = {
+    val res = next(JsonReader.STRING)
+    // unescape
+    StringEscapeUtils.unescapeJson(res)
+  }
+
+  // TODO: might be more efficient than the complex regex one
+  private def readJsonStringOld(): String = {
     // find the next start of a string
     skipAfter(JsonReader.STRING_START)
     // read until the next "
-    val res = stringUntil(JsonReader.STRING_END)
+    val res = if (tryToConsumeNextToken(JsonReader.STRING_START)) {
+      // the delimiter has been found right away, meaning that the desired string is empty
+      ""
+    } else {
+      scanner.useDelimiter(JsonReader.STRING_END)
+      scanner.next()
+    }
+    reset()
     // move until after the "
     skipAfter(JsonReader.STRING_START)
     // escape
@@ -51,19 +65,6 @@ class JsonReader(val in: Reader) {
   /** Read a JSON boolean value */
   def readJsonBoolean(): String = {
     next(JsonReader.BOOLEAN)
-  }
-
-  private def stringUntil(pattern: Pattern): String = {
-    scanner.useDelimiter("")
-    val res = if (scanner.hasNext(pattern)) {
-      // the delimiter has been found right away, meaning that the desired string is empty
-      ""
-    } else {
-      scanner.useDelimiter(pattern)
-      scanner.next()
-    }
-    reset()
-    res
   }
 
   private def next(pattern: Pattern): String = {
@@ -98,7 +99,8 @@ class JsonReader(val in: Reader) {
 }
 
 object JsonReader {
-  val DELIMITER = "\\s*:?\\s*"
+  //val STRING = Pattern.compile("\"[a-z]*\"")
+  val STRING = Pattern.compile("\"(((?=\\\\)\\\\([\"\\\\/bfnrt]|u[0-9a-fA-F]{4}))|[^\"\\\\\\x00-\\x1F\\x7F]+)*\"")
   val STRING_START = Pattern.compile("\"")
   val STRING_END = Pattern.compile("(?<!\\\\)\"")
   //val NUMBER = Pattern.compile("[0-9]+")
@@ -114,7 +116,8 @@ object JsonReader {
   val NULL = Pattern.compile("null")
   val WHITESPACE = Pattern.compile("[\\x20\\x09\\x0A\\x0D]")
 
-  def p(s: String): Pattern = Pattern.compile(s)
+  def quote(javaString: String): String = "\"" + javaString + "\""
+  def unquote(jsonString: String): String = jsonString.substring(1, jsonString.length - 1)
 }
 
 object JsonReaderApp extends App {

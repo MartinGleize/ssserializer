@@ -1,32 +1,27 @@
 package ssserializer.serializers.json
 
-import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
+import ssserializer.serializers.MasterSerializer
 
-import ssserializer.serializers.{MasterSerializer, Serializer}
+import scala.reflect.runtime.universe._
 
-import scala.reflect.runtime.universe
+class MapSerializer extends Serializer[Map[_, _]] {
 
-class MapSerializer extends Serializer {
-
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
-    val writer = new BufferedWriter(new OutputStreamWriter(dest))
-    writer.write("[")
+  override def serializeNonNull(map: Map[_, _], t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
+    w.write("[")
     val keyType = t.typeArgs(0)
     val valueType = t.typeArgs(1)
-    val map = data.asInstanceOf[Map[_, _]]
     val size = map.size
     for (((key, value), index) <- map.zipWithIndex) {
-      writer.write("{\"key\":")
-      parentSerializer.serialize(key, keyType, dest)
-      writer.write(",\"value\":")
-      parentSerializer.serialize(value, valueType, dest)
-      writer.write("}")
+      w.write("{\"key\":")
+      parentSerializer.serialize(key, keyType, w)
+      w.write(",\"value\":")
+      parentSerializer.serialize(value, valueType, w)
+      w.write("}")
       if (index != size - 1) {
-        writer.write(",")
+        w.write(",")
       }
     }
-    writer.write("]")
-    writer.flush()
+    w.write("]")
   }
 
 }

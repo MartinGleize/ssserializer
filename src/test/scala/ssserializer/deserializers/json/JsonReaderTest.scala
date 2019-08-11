@@ -11,7 +11,7 @@ class JsonReaderTest extends FlatSpec with Matchers {
       "sldfjlk sd\"\" oops" -> ""
     )
     inputOutputs.foreach { case (input, output) =>
-      new JsonReader(input).readJsonString() should be (output)
+      new JsonReader(input).readJsonString() should be (JsonReader.quote(output))
     }
   }
 
@@ -24,7 +24,7 @@ class JsonReaderTest extends FlatSpec with Matchers {
       ("\"key5\": false ", _.readJsonBoolean(), ("key5", "false"))
     )
     nameValues.foreach { case (input, method, (name, value)) =>
-      readNameValue(new JsonReader(input), method) should be ((name, value))
+      readNameValue(new JsonReader(input), method) should be ((JsonReader.quote(name), value))
     }
   }
 

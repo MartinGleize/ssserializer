@@ -8,7 +8,7 @@ import scala.reflect.runtime.universe._
 
 package object ssserializer {
 
-  def serialize[T : TypeTag](data: T, dest: OutputStream)(implicit serializer: MasterSerializer): Unit = ()
+  def serialize[T : TypeTag](data: T, dest: OutputStream)(implicit serializer: MasterSerializer[OutputStream]): Unit = ()
 
   def deserialize[T : TypeTag](src: InputStream)(implicit deserializer: MasterDeserializer[InputStream]): T = deserializer.deserialize(typeOf[T], src).asInstanceOf[T]
 

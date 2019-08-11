@@ -4,7 +4,7 @@ import scala.reflect.runtime.universe._
 import ssserializer.deserializers.MasterDeserializer
 
 /**
- * Overrides the Deserializer trait in the "deserializers" with JSON specific processing, such as handling of null.
+ * Overrides the Deserializer trait in the "deserializers" package with JSON specific processing, such as handling of null.
  * @tparam T a nullable type
  */
 trait Deserializer[T] extends ssserializer.deserializers.Deserializer[T, JsonReader] {

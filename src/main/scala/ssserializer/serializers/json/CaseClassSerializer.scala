@@ -1,35 +1,30 @@
 package ssserializer.serializers.json
 
-import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
-
 import org.apache.commons.text.StringEscapeUtils
-import ssserializer.serializers.{MasterSerializer, Serializer}
+import ssserializer.serializers.MasterSerializer
 
-import scala.reflect.runtime.universe
+import scala.reflect.runtime.universe._
 
 /**
  * Case class serializer. A current limitation is that it doesn't handle inner case classes (which could typically be
  * considered standalone classes in most cases).
  */
-class CaseClassSerializer extends Serializer {
+class CaseClassSerializer extends Serializer[Product] {
 
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
-    val writer = new BufferedWriter(new OutputStreamWriter(dest))
+  override def serializeNonNull(product: Product, t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
     val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
     val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
-    val product = data.asInstanceOf[Product]
     val productArgs = product.productIterator.toList
     val size = productArgs.size
-    writer.write("{")
+    w.write("{")
     for ((arg, index) <- productArgs.zipWithIndex) {
       val argName = jsonifyArgName(orderedArgs(index)._1.toString)
-      writer.write("\"" + argName + "\":")
-      parentSerializer.serialize(arg, orderedArgs(index)._2, dest)
+      w.write("\"" + argName + "\":")
+      parentSerializer.serialize(arg, orderedArgs(index)._2, w)
       if (index != size - 1)
-        writer.write(",")
+        w.write(",")
     }
-    writer.write("}")
-    writer.flush()
+    w.write("}")
   }
 
   private def jsonifyArgName(argName: String): String = StringEscapeUtils.escapeJson(argName.trim)

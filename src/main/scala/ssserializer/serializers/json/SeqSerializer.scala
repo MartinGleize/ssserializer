@@ -1,26 +1,21 @@
 package ssserializer.serializers.json
 
-import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
+import ssserializer.serializers.MasterSerializer
 
-import ssserializer.serializers.{MasterSerializer, Serializer}
+import scala.reflect.runtime.universe._
 
-import scala.reflect.runtime.universe
+class SeqSerializer extends Serializer[Seq[_]] {
 
-class SeqSerializer extends Serializer {
-
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
-    val writer = new BufferedWriter(new OutputStreamWriter(dest))
+  override def serializeNonNull(seq: Seq[_], t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
     val elementType = t.typeArgs.head
-    val seq = data.asInstanceOf[Seq[_]]
     val size = seq.size
-    writer.write("[")
+    w.write("[")
     for ((element, index) <- seq.zipWithIndex) {
-      parentSerializer.serialize(element, elementType, dest)
+      parentSerializer.serialize(element, elementType, w)
       if (index != size - 1) {
-        writer.write(",")
+        w.write(",")
       }
     }
-    writer.write("]")
-    writer.flush()
+    w.write("]")
   }
 }
