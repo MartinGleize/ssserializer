@@ -1,21 +1,20 @@
 package ssserializer.serializers.json
 
 import ssserializer.serializers.{MasterSerializer, Serializer}
+import ssserializer.typing.Detector
+import ssserializer.typing.detectors._
 
 class JsonSerializer extends MasterSerializer {
-  override val doubleSerializer: Serializer[Double] = new ToStringSerializer[Double]()
 
-  override val longSerializer: Serializer[Long] = new ToStringSerializer[Long]()
+  override val serializers: Seq[(Detector, Serializer)] = Seq(
+    doubleDetector -> new ToStringSerializer(),
+    longDetector -> new ToStringSerializer(),
+    intDetector -> new ToStringSerializer(),
+    booleanDetector -> new ToStringSerializer(),
+    stringDetector -> new StringSerializer(),
+    seqDetector -> new SeqSerializer(),
+    mapDetector -> new MapSerializer(),
+    caseClassDetector -> new CaseClassSerializer()
+  )
 
-  override val intSerializer: Serializer[Int] = new ToStringSerializer[Int]()
-
-  override val booleanSerializer: Serializer[Boolean] = null // TODO: throw custom exception for non-implemented serializers
-
-  override val stringSerializer: Serializer[String] = new StringSerializer()
-
-  override val seqSerializer: Serializer[Seq[_]] = new SeqSerializer()
-
-  override val mapSerializer: Serializer[Map[_, _]] = new MapSerializer()
-
-  override val caseClassSerializer: Serializer[Product] = new CaseClassSerializer()
 }

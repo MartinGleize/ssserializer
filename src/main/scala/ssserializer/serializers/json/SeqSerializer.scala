@@ -6,14 +6,15 @@ import ssserializer.serializers.{MasterSerializer, Serializer}
 
 import scala.reflect.runtime.universe
 
-class SeqSerializer extends Serializer[Seq[_]] {
+class SeqSerializer extends Serializer {
 
-  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
+  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
     val writer = new BufferedWriter(new OutputStreamWriter(dest))
     val elementType = t.typeArgs.head
-    val size = data.size
+    val seq = data.asInstanceOf[Seq[_]]
+    val size = seq.size
     writer.write("[")
-    for ((element, index) <- data.zipWithIndex) {
+    for ((element, index) <- seq.zipWithIndex) {
       parentSerializer.serialize(element, elementType, dest)
       if (index != size - 1) {
         writer.write(",")
@@ -22,6 +23,4 @@ class SeqSerializer extends Serializer[Seq[_]] {
     writer.write("]")
     writer.flush()
   }
-
-  override def serialize(data: Seq[_], t: universe.Type, dest: OutputStream): Unit = () // TODO: throw some custom exception
 }

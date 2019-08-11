@@ -15,7 +15,8 @@ trait MasterDeserializer[Input] extends Deserializer[Any, Input] {
   def deserializers: Seq[(Detector, Deserializer[_, Input])]
 
   override def deserialize(t: Type, src: Input, parentDeserializer: MasterDeserializer[Input] = null): Any = {
-    // TODO: throw some custom exception
+    // TODO: throw some custom exception for non-handled type
+    // TODO: throw some internal dev-only exception for parentDeserializer not being null on this call
     val deserializer = TypeMapper.map(t, deserializers).getOrElse(throw new RuntimeException("Type not handled"))
     deserializer.deserialize(t, src, this)
   }

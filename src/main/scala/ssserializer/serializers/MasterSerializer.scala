@@ -2,55 +2,27 @@ package ssserializer.serializers
 
 import java.io.OutputStream
 
+import ssserializer.deserializers.MasterDeserializer
 import ssserializer.typing.TypeMapper
 import ssserializer.typing._
 
-import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
-trait MasterSerializer extends Serializer[Any] {
+/**
+ * A serializer that delegates its task to specialized serializers for their detected type
+ *
+ */
+trait MasterSerializer extends Serializer {
 
-  override def serialize(data: Any, t: Type, dest: OutputStream): Unit = TypeMapper.map(t) match {
-    case None => throw new RuntimeException("Type not handled") // TODO: throw some custom exception
-    case Some(serializableType) => serializableType match {
-      case Double =>
-        doubleSerializer.serialize(data.asInstanceOf[Double], t, dest, this)
-      case Long =>
-        longSerializer.serialize(data.asInstanceOf[Long], t, dest, this)
-      case Int =>
-        intSerializer.serialize(data.asInstanceOf[Int], t, dest, this)
-      case Boolean =>
-        booleanSerializer.serialize(data.asInstanceOf[Boolean], t, dest, this)
-      case String =>
-        stringSerializer.serialize(data.asInstanceOf[String], t, dest, this)
-      case Seq =>
-        seqSerializer.serialize(data.asInstanceOf[Seq[_]], t, dest, this)
-      case Map =>
-        mapSerializer.serialize(data.asInstanceOf[Map[_, _]], t, dest, this)
-      case CaseClass =>
-        caseClassSerializer.serialize(data.asInstanceOf[Product], t, dest, this)
-    }
+  /* TODO: pre-build some structure checking for Detector-Serializer compatibility, and also possibly ordering the checks
+   * according to sub-types (like List must be detected before Seq) */
+  /** Pairs of a detector and the serializer supporting the type it detects */
+  def serializers: Seq[(Detector, Serializer)]
+
+  override def serialize(data: Any, t: Type, dest: OutputStream, parentSerializer: MasterSerializer = null): Unit = {
+    // TODO: throw some custom exception for non-handled type
+    // TODO: throw some internal dev-only exception for parentDeserializer not being null on this call
+    val serializer = TypeMapper.map(t, serializers).getOrElse(throw new RuntimeException("Type not handled"))
+    serializer.serialize(data, t, dest, this)
   }
-
-  override def serialize(data: Any, t: universe.Type, dest: OutputStream, parentSerializer: MasterSerializer): Unit = {
-    // TODO: throw exception to warn that this shouldn't be used on anyserializer
-    ()
-  }
-
-  def doubleSerializer: Serializer[Double]
-
-  def longSerializer: Serializer[Long]
-
-  def intSerializer: Serializer[Int]
-
-  def booleanSerializer: Serializer[Boolean]
-
-  def stringSerializer: Serializer[String]
-
-  def seqSerializer: Serializer[Seq[_]]
-
-  def mapSerializer: Serializer[Map[_, _]]
-
-  def caseClassSerializer: Serializer[Product]
-
 }

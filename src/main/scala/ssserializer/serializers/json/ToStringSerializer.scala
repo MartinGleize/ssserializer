@@ -1,6 +1,6 @@
 package ssserializer.serializers.json
 import scala.reflect.runtime.universe
 
-class ToStringSerializer[T] extends StringWriterSerializer[T] {
-  override def serialize(data: T, t: universe.Type): String = String.valueOf(data)
+class ToStringSerializer extends StringWriterSerializer {
+  override def serialize(data: Any, t: universe.Type): String = String.valueOf(data)
 }
