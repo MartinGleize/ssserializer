@@ -2,7 +2,7 @@ package ssserializer.serializers.json
 
 import java.io.BufferedWriter
 
-import ssserializer.serializers.{MasterSerializer, Serializers}
+import ssserializer.serializers.MasterSerializer
 import ssserializer.typing.Detector
 import ssserializer.typing.detectors._
 
