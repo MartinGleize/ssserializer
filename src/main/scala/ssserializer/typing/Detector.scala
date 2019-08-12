@@ -11,6 +11,8 @@ object Detector {
 
   def ofExactType(t: Type): Detector = _ =:= t
 
+  def ofExactBaseType(baseType: Type): Detector = isDerivedFrom(_, baseType)
+
   def ofBaseErasure(baseType: Type): Detector = isDerivedFrom(_, baseType.erasure)
 
   /** Returns true if tpe is derived from baseType */

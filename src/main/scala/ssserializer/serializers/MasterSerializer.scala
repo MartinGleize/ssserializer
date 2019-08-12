@@ -22,7 +22,7 @@ trait MasterSerializer[Output] extends Serializer[Output] {
   override def serialize(data: Any, t: Type, dest: Output, parentSerializer: MasterSerializer[Output] = null): Unit = {
     // TODO: throw some custom exception for non-handled type
     // TODO: throw some internal dev-only exception for parentDeserializer not being null on this call
-    val serializer = TypeMapper.map(t, serializers).getOrElse(throw new RuntimeException("Type not handled"))
+    val serializer = TypeMapper.map(t, serializers).getOrElse(throw new RuntimeException("Type not handled: " + t))
     serializer.serialize(data, t, dest, this)
   }
 }

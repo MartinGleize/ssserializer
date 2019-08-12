@@ -31,6 +31,8 @@ package object detectors {
 
   val stringDetector: Detector = Detector.ofExactType(typeOf[String])
 
+  val arrayDetector: Detector = _ <:< typeOf[Array[_]]
+
   val seqDetector: Detector = Detector.ofBaseErasure(typeOf[Seq[_]])
 
   val mapDetector: Detector = Detector.ofBaseErasure(typeOf[Map[_, _]])

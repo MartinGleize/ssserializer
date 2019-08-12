@@ -8,6 +8,11 @@ object TestObjects {
   val doubleTests: Seq[Double] = Seq(0.0, 1.337, -1.337)
   val booleanTests: Seq[Boolean] = Seq(true, false)
   val stringTests: Seq[String] = Seq(null, "", "lol", "lol\"lol", "lol\nlol")
+  val arrayTests: Seq[Array[Int]] = Seq(
+    null,
+    Array(),
+    Array(1, 2, 3, 4, 5)
+  )
   val sequenceTests: Seq[Seq[Seq[String]]] = Seq(
     Seq(),
     Seq(Seq()),

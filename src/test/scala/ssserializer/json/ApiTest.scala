@@ -1,6 +1,7 @@
 package ssserializer.json
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
+import java.nio.charset.StandardCharsets
 
 import org.scalatest.Assertion
 import ssserializer.TestObjects._
@@ -18,6 +19,7 @@ class ApiTest extends UnitSpec {
   doubleTests.foreach(test(_))
   booleanTests.foreach(test(_))
   stringTests.foreach(test(_))
+  arrayTests.foreach(test(_))
   sequenceTests.foreach(test(_))
   mapTests.foreach(test(_))
   caseClassTests.foreach(test(_))
@@ -33,6 +35,8 @@ class ApiTest extends UnitSpec {
     val output = new ByteArrayOutputStream()
     // serialize (this is the public API, which uses an implicit serializer)
     serialize(data, output)
+    // just for debugging
+    val stringOutput = output.toString("UTF-8")
     // deserialize (also the public API, using an implicit deserializer)
     val input = new ByteArrayInputStream(output.toByteArray)
     deserialize[T](input)

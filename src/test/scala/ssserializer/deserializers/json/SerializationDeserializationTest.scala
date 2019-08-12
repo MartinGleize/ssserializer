@@ -21,6 +21,7 @@ class SerializationDeserializationTest extends JsonDeserializerSpec {
     doubleTests.foreach(test(_))
     booleanTests.foreach(test(_))
     stringTests.foreach(test(_))
+    arrayTests.foreach(test(_))
     sequenceTests.foreach(test(_))
     mapTests.foreach(test(_))
     caseClassTests.foreach(test(_))
