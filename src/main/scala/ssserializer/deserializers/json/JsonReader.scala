@@ -1,6 +1,6 @@
 package ssserializer.deserializers.json
 
-import java.io.{Reader, StringReader}
+import java.io.{Closeable, Reader, StringReader}
 import java.util.Scanner
 import java.util.regex.Pattern
 
@@ -13,7 +13,7 @@ import org.apache.commons.text.StringEscapeUtils
  *
  * @param in
  */
-class JsonReader(val in: Reader) {
+class JsonReader(val in: Reader) extends Closeable {
 
   def this(s: String) { this(new StringReader(s)) }
 
@@ -96,6 +96,8 @@ class JsonReader(val in: Reader) {
     scanner.reset()
     //scanner.useDelimiter(JsonReader.DELIMITER)
   }
+
+  override def close(): Unit = scanner.close()
 }
 
 object JsonReader {
