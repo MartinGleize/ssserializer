@@ -1,5 +1,4 @@
-import java.io.OutputStream
-import java.io.InputStream
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, OutputStream, StringReader}
 
 import ssserializer.deserializers.Deserializer
 import ssserializer.serializers.Serializer
@@ -23,6 +22,13 @@ package object ssserializer {
     serializer.serialize(data, typeOf[T], dest)
   }
 
+  def serialize[T : TypeTag](data: T)(implicit serializer: Serializer[OutputStream]): String = {
+    val output = new ByteArrayOutputStream()
+    serialize(data, output)
+    output.close()
+    output.toString("UTF-8")
+  }
+
   /** Returns an object whose serialized representation is read on the provided input stream.
    * An implicit deserializer should be exposed, e.g. add the following import for a JSON representation:
    * import ssserializer.json._
@@ -31,4 +37,10 @@ package object ssserializer {
     deserializer.deserialize(typeOf[T], src).asInstanceOf[T]
   }
 
+  def deserialize[T : TypeTag](src: String)(implicit deserializer: Deserializer[Any, InputStream]): T = {
+    val input = new ByteArrayInputStream(src.getBytes("UTF-8"))
+    val res = deserialize[T](input)
+    input.close()
+    res
+  }
 }
