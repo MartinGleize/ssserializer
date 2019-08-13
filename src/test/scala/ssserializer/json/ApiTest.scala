@@ -25,6 +25,8 @@ class ApiTest extends UnitSpec {
   caseClassTests.foreach(test(_))
   caseClassMoreTests.foreach((test(_)))
   optionTests.foreach(test(_))
+  tuple2Tests.foreach(test(_))
+  tuple3Tests.foreach(test(_))
 
   def test[T : TypeTag](data: T): Assertion = {
     serializeDeserialize(data) should be (data)

@@ -1,5 +1,6 @@
 package ssserializer.typing
 
+import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 /**
@@ -39,5 +40,11 @@ package object detectors {
 
   val optionDetector: Detector = Detector.ofBaseErasure(typeOf[Option[_]])
 
-  val caseClassDetector: Detector = _.typeSymbol.asClass.isCaseClass
+  val tupleDetector: Detector = (t) => {
+    t.erasure.baseClasses.exists(symbol => symbol.fullName.contains("Tuple"))
+  }
+
+  val caseClassDetector: Detector = (t) => {
+    t.typeSymbol.asClass.isCaseClass && !t.erasure.baseClasses.exists(symbol => symbol.fullName.contains("Tuple"))
+  }
 }

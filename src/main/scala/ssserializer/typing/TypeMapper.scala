@@ -6,8 +6,9 @@ import detectors._
 object TypeMapper {
 
   def map[E](t: Type, detectedObjects: Seq[(Detector, E)]): Option[E] = {
+    val tDealias = t.dealias.widen
     detectedObjects
-      .find { case (detector, _) => detector.isCompatible(t) }
+      .find { case (detector, _) => detector.isCompatible(tDealias) }
       .map(_._2)
   }
 

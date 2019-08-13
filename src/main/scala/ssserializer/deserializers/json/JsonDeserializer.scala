@@ -16,7 +16,8 @@ class JsonDeserializer extends MasterDeserializer[JsonReader] {
     arrayDetector -> defaults.arrayDeserializer,
     seqDetector -> defaults.seqDeserializer,
     mapDetector -> new MapDeserializer(),
-    caseClassDetector -> new CaseClassDeserializer()
+    caseClassDetector -> new CaseClassDeserializer(),
+    tupleDetector -> new TupleDeserializer()
   )
 
 }

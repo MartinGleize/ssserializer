@@ -6,21 +6,28 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
-trait SeqDeserializer[T <: Seq[_]] extends Deserializer[T] {
+trait SeqDeserializer[T] extends Deserializer[T] {
 
-  def constructFinalSequence(res: mutable.Seq[_]): T
+  //TODO: might be able to use Factory or BuildFrom type of implicits here to ease the implementation */
+  def constructFinalObject(elements: mutable.Seq[_]): T
+
+  /** Returns a companion iterator of the types of each element in the sequence-like data
+   * In practice for most sequences, it will continually return the one type parameter,
+   * but for Product/Tuple it's convenient to produce each of the types in the same way we do elements.
+   * */
+  def typeIterator(t: Type): Iterator[Type] = Iterator.continually(t.typeArgs.head)
 
   override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): T = {
-    val elementType = t.typeArgs.head
+    val typeIt = typeIterator(t)
     jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[Any]()
     var potentialElement: Option[Any] = null
-    while ({potentialElement = deserializeNextElement(elementType, jsonReader, parentDeserializer); potentialElement.isDefined}) {
+    while (typeIt.hasNext && {potentialElement = deserializeNextElement(typeIt.next(), jsonReader, parentDeserializer); potentialElement.isDefined}) {
       val element = potentialElement.get
       res += element
     }
     // TODO: this is where we would change things to construct objects of precise subclasses like List vs Vector
-    constructFinalSequence(res)
+    constructFinalObject(res, t)
   }
 
   def deserializeNextElement(elementType: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Option[Any] = {
@@ -35,4 +42,6 @@ trait SeqDeserializer[T <: Seq[_]] extends Deserializer[T] {
       Some(element)
     }
   }
+
+  def constructFinalObject(elements: mutable.Seq[_], t: Type): T = constructFinalObject(elements)
 }
