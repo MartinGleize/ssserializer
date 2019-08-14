@@ -9,11 +9,25 @@ object TestObjects {
   val booleanTests: Seq[Boolean] = Seq(true, false)
   val stringTests: Seq[String] = Seq(null, "", "lol", "lol\"lol", "lol\nlol")
 
-  val arrayTests: Seq[Array[Int]] = Seq(
+  val arrayIntTests: Seq[Array[Int]] = Seq(
     null,
     Array(),
     Array(1, 2, 3, 4, 5)
   )
+  val arrayStringTests: Seq[Array[String]] = Seq(
+    null,
+    Array(),
+    Array(null, ""),
+    Array("haha", "hoho")
+  )
+  val arrayAnyTests: Seq[Array[Seq[Person]]] = Seq(
+    null,
+    Array(),
+    Array(Seq()),
+    Array(Seq(null)),
+    Array(Seq(Person("Mary", 42)))
+  )
+
 
   val sequenceTests: Seq[Seq[Seq[String]]] = Seq(
     Seq(),
