@@ -1,7 +1,6 @@
 package ssserializer.json
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-import java.nio.charset.StandardCharsets
 
 import org.scalatest.Assertion
 import ssserializer.TestObjects._
