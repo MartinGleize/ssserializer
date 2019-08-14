@@ -1,7 +1,5 @@
 package ssserializer.deserializers.json
 
-import java.io.BufferedWriter
-
 package object defaults {
 
   val doubleDeserializer: NumberStringDeserializer[Double] = _.toDouble
@@ -19,6 +17,8 @@ package object defaults {
   val stringDeserializer: StringParseDeserializer[String] = new StringDeserializer()
 
   val seqDeserializer: SeqDeserializer[Seq[_]] = _.toList
+
+  val setDeserializer: SeqDeserializer[Set[_]] = _.toSet
 
   val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
 }

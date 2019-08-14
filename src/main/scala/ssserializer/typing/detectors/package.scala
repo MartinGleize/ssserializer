@@ -36,6 +36,8 @@ package object detectors {
 
   val seqDetector: Detector = Detector.ofBaseErasure(typeOf[Seq[_]])
 
+  val setDetector: Detector = Detector.ofBaseErasure(typeOf[Set[_]])
+
   val mapDetector: Detector = Detector.ofBaseErasure(typeOf[Map[_, _]])
 
   val optionDetector: Detector = Detector.ofBaseErasure(typeOf[Option[_]])

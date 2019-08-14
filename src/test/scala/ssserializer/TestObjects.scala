@@ -28,12 +28,18 @@ object TestObjects {
     Array(Seq(Person("Mary", 42)))
   )
 
-
   val sequenceTests: Seq[Seq[Seq[String]]] = Seq(
     Seq(),
     Seq(Seq()),
     Seq(Seq("")),
     Seq(Seq("11", "12"), Seq("21"))
+  )
+
+  val setTests: Seq[Set[Person]] = Seq(
+    null,
+    Set(),
+    Set(Person("John", 3)),
+    Set(Person("Mary", 5), Person("Mary", 5), Person("John", 11))
   )
 
   val mapTests: Seq[Map[String, Seq[Int]]] = Seq(

@@ -22,6 +22,7 @@ class JsonSerializer extends MasterSerializer[BufferedWriter] {
       override def iterator(data: Array[_]): Iterator[_] = data.iterator // there is an implicit conversion here, to ArrayOps
     },
     seqDetector -> new SeqSerializer[Seq[_]](),
+    setDetector -> new SeqSerializer[Set[_]](),
     mapDetector -> new MapSerializer(),
     tupleDetector -> new TupleSerializer(),
     caseClassDetector -> new CaseClassSerializer()

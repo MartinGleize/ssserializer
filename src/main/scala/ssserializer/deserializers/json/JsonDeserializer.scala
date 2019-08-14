@@ -4,6 +4,8 @@ import ssserializer.deserializers.MasterDeserializer
 import ssserializer.typing.detectors._
 import ssserializer.typing.Detector
 
+import scala.collection.mutable
+
 class JsonDeserializer extends MasterDeserializer[JsonReader] {
 
   override val deserializers: Seq[(Detector, ssserializer.deserializers.Deserializer[_, JsonReader])] = Seq(
@@ -15,6 +17,7 @@ class JsonDeserializer extends MasterDeserializer[JsonReader] {
     optionDetector -> new OptionDeserializer(),
     arrayDetector -> defaults.arrayDeserializer,
     seqDetector -> defaults.seqDeserializer,
+    setDetector -> defaults.setDeserializer,
     mapDetector -> new MapDeserializer(),
     caseClassDetector -> new CaseClassDeserializer(),
     tupleDetector -> new TupleDeserializer()

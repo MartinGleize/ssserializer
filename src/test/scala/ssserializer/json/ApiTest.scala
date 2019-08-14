@@ -20,8 +20,10 @@ class ApiTest extends UnitSpec {
   stringTests.foreach(test(_))
   arrayIntTests.foreach(test(_))
   arrayStringTests.foreach(test(_))
+  // TODO: this one fails randomly, seemingly the first time, and then not anymore,
   arrayAnyTests.foreach(test(_))
   sequenceTests.foreach(test(_))
+  setTests.foreach(test(_))
   mapTests.foreach(test(_))
   caseClassTests.foreach(test(_))
   caseClassMoreTests.foreach((test(_)))
