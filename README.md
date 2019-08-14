@@ -9,7 +9,7 @@ It currently supports JSON serialization/deserialization of:
 * String
 * Arrays
 * Most sequence types like Seq, Vector, List
-* Map
+* Set, Map
 * Standalone case classes
 * Option
 * Tuples of all arities
