@@ -2,7 +2,7 @@
 
 # ssserializer
 
-ssserializer, the Simple Scala Serializer, provides seamless serialization/deserialization capabilities for many Scala types without the need for any boilerplate code at all, and a very low memory footprint at runtime.
+ssserializer, the Simple Scala Serializer, provides seamless serialization/deserialization capabilities for many Scala types without the need for any boilerplate code at all, and with a very low memory footprint at runtime.
 
 It currently supports JSON serialization/deserialization of:
 * Value types (Int, Long, Double, Boolean...)
