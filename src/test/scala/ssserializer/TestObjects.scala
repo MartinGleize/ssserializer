@@ -35,6 +35,21 @@ object TestObjects {
     Seq(Seq("11", "12"), Seq("21"))
   )
 
+  val listTests: Seq[List[String]] = Seq(
+    null,
+    List(),
+    List(null),
+    List(""),
+    List("first", "second")
+  )
+
+  val vectorTests: Seq[Vector[Int]] = Seq(
+    null,
+    Vector(),
+    Vector(0),
+    Vector(1, 2, 3, 3, 2, 1)
+  )
+
   val setTests: Seq[Set[Person]] = Seq(
     null,
     Set(),

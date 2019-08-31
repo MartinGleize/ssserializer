@@ -4,8 +4,6 @@ import ssserializer.deserializers.MasterDeserializer
 import ssserializer.typing.detectors._
 import ssserializer.typing.Detector
 
-import scala.collection.mutable
-
 class JsonDeserializer extends MasterDeserializer[JsonReader] {
 
   override val deserializers: Seq[(Detector, ssserializer.deserializers.Deserializer[_, JsonReader])] = Seq(
@@ -16,7 +14,9 @@ class JsonDeserializer extends MasterDeserializer[JsonReader] {
     stringDetector -> defaults.stringDeserializer,
     optionDetector -> new OptionDeserializer(),
     arrayDetector -> defaults.arrayDeserializer,
-    seqDetector -> defaults.seqDeserializer,
+    seqDetector[List[_]] -> new IterableOpsDeserializer[List](), // IntelliJ's Scala plugin falsely shows a compilation error here, the implicit should be found
+    seqDetector[Vector[_]] -> new IterableOpsDeserializer[Vector](),
+    seqDetector[Seq[_]] -> defaults.seqDeserializer,
     setDetector -> defaults.setDeserializer,
     mapDetector -> new MapDeserializer(),
     caseClassDetector -> new CaseClassDeserializer(),

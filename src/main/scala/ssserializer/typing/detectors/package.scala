@@ -34,7 +34,9 @@ package object detectors {
 
   val arrayDetector: Detector = _ <:< typeOf[Array[_]]
 
-  val seqDetector: Detector = Detector.ofBaseErasure(typeOf[Seq[_]])
+  def seqDetector[S <: Seq[_] : TypeTag]: Detector = Detector.ofBaseErasure(typeOf[S])
+
+  //val seqDetector: Detector = Detector.ofBaseErasure(typeOf[Seq[_]])
 
   val setDetector: Detector = Detector.ofBaseErasure(typeOf[Set[_]])
 

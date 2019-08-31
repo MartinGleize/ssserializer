@@ -6,10 +6,10 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
-trait SeqDeserializer[T] extends Deserializer[T] {
+trait SeqDeserializer[S] extends Deserializer[S] {
 
   //TODO: might be able to use Factory or BuildFrom type of implicits here to ease the implementation */
-  def constructFinalObject(elements: mutable.Seq[_]): T
+  def constructFinalObject(elements: mutable.Seq[Any]): S
 
   /** Returns a companion iterator of the types of each element in the sequence-like data
    * In practice for most sequences, it will continually return the one type parameter,
@@ -17,7 +17,7 @@ trait SeqDeserializer[T] extends Deserializer[T] {
    * */
   def typeIterator(t: Type): Iterator[Type] = Iterator.continually(t.typeArgs.head)
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): T = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): S = {
     val typeIt = typeIterator(t)
     jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[Any]()
@@ -43,5 +43,5 @@ trait SeqDeserializer[T] extends Deserializer[T] {
     }
   }
 
-  def constructFinalObject(elements: mutable.Seq[_], t: Type): T = constructFinalObject(elements)
+  def constructFinalObject(elements: mutable.Seq[Any], t: Type): S = constructFinalObject(elements)
 }

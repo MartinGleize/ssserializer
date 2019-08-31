@@ -21,7 +21,9 @@ class JsonSerializer extends MasterSerializer[BufferedWriter] {
       /** Returns an iterator of elements contained in the supposed sequence-like 'data' */
       override def iterator(data: Array[_]): Iterator[_] = data.iterator // there is an implicit conversion here, to ArrayOps
     },
-    seqDetector -> new SeqSerializer[Seq[_]](),
+    seqDetector[List[_]] -> new SeqSerializer[List[_]](),
+    seqDetector[Vector[_]] -> new SeqSerializer[Vector[_]](),
+    seqDetector[Seq[_]] -> new SeqSerializer[Seq[_]](),
     setDetector -> new SeqSerializer[Set[_]](),
     mapDetector -> new MapSerializer(),
     tupleDetector -> new TupleSerializer(),

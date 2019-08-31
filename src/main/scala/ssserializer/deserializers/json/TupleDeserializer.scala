@@ -11,7 +11,7 @@ class TupleDeserializer extends CaseClassDeserializer with SeqDeserializer[Produ
 
   override def typeIterator(t: universe.Type): Iterator[universe.Type] = t.typeArgs.iterator
 
-  override def constructFinalObject(elements: mutable.Seq[_], t: universe.Type): Product = newProduct(t, elements.toSeq)
+  override def constructFinalObject(elements: mutable.Seq[Any], t: universe.Type): Product = newProduct(t, elements.toSeq)
 
-  override def constructFinalObject(elements: mutable.Seq[_]): Product = throw new RuntimeException("Should not be called")
+  override def constructFinalObject(elements: mutable.Seq[Any]): Product = throw new RuntimeException("Should not be called")
 }
