@@ -16,3 +16,4 @@ class CaseClassDeserializerTest extends JsonDeserializerSpec {
 
 case class Person(name: String, age: Int)
 case class BasketballTeam(name: String, players: Seq[Person])
+case class EmployedPerson(name: String, hasJob: Boolean = false)
