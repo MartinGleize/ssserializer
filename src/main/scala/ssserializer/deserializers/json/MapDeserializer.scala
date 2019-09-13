@@ -11,7 +11,6 @@ class MapDeserializer extends Deserializer[Map[_, _]] {
   override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Map[_, _] = {
     val keyType = t.typeArgs(0)
     val valueType = t.typeArgs(1)
-    // TODO: handle null
     jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[(Any, Any)]()
     var potentialElement: Option[(Any, Any)] = null
@@ -24,7 +23,6 @@ class MapDeserializer extends Deserializer[Map[_, _]] {
   }
 
   def deserializeNextKeyValuePair(keyType: Type, valueType: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Option[(Any, Any)] = {
-    // TODO: handle null here
     // first try to look for the end of the JSON array
     if (jsonReader.tryToConsumeNextToken(JsonReader.BRACKET_CLOSE)) {
       None

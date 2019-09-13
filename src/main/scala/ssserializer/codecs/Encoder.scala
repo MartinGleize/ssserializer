@@ -4,6 +4,10 @@ import java.io.{BufferedWriter, StringReader, StringWriter}
 
 import ssserializer.deserializers.json.JsonReader
 
+// This is just proof of concept code, only for Scala 2.13
+
+/*
+
 import scala.collection.Factory
 import scala.collection.mutable.ArrayBuffer
 
@@ -128,3 +132,5 @@ object Main extends App {
   println(jsonComposed)
   println(jsonComposed.as[Vector[List[Int]]] == composedDeeper)
 }
+
+*/

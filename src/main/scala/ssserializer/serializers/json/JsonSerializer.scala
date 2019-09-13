@@ -6,8 +6,6 @@ import ssserializer.serializers.MasterSerializer
 import ssserializer.typing.Detector
 import ssserializer.typing.detectors._
 
-import scala.collection.immutable.ArraySeq
-
 class JsonSerializer extends MasterSerializer[BufferedWriter] {
 
   override val serializers: Seq[(Detector, ssserializer.serializers.Serializer[BufferedWriter])] = Seq(
