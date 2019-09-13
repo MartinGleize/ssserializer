@@ -12,9 +12,9 @@ class MapSerializer extends Serializer[Map[_, _]] {
     val valueType = t.typeArgs(1)
     val size = map.size
     for (((key, value), index) <- map.zipWithIndex) {
-      w.write("{\"key\":")
+      w.write("{\"k\":")
       parentSerializer.serialize(key, keyType, w)
-      w.write(",\"value\":")
+      w.write(",\"v\":")
       parentSerializer.serialize(value, valueType, w)
       w.write("}")
       if (index != size - 1) {

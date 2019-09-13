@@ -1,6 +1,6 @@
 package ssserializer.deserializers.json
 
-import ssserializer.deserializers.MasterDeserializer
+import ssserializer.deserializers.{DeserializationException, MasterDeserializer}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -81,7 +81,13 @@ class CaseClassDeserializer extends Deserializer[Product] {
        *
        * @param args the arguments to supply to the constructor method
        */
-      def buildWith(args: Seq[_]): T = constructorMethod(args: _*).asInstanceOf[T]
+      def buildWith(args: Seq[_]): T = {
+        try {
+          constructorMethod(args: _*).asInstanceOf[T]
+        } catch {
+          case iae: IllegalArgumentException => throw new DeserializationException(iae, tpe)
+        }
+      }
 
     }
   }

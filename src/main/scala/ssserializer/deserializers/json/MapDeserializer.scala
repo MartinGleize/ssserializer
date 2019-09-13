@@ -29,11 +29,11 @@ class MapDeserializer extends Deserializer[Map[_, _]] {
     } else {
       // can't read a "]" so a new element can be read
       jsonReader.skipAfter(JsonReader.CURLY_OPEN)
-      // read the key (ignore the JSON name, should be "key")
+      // read the key (ignore the JSON name, should be "k")
       jsonReader.readJsonName()
       val key = parentDeserializer.deserialize(keyType, jsonReader)
       jsonReader.skipAfter(JsonReader.COMMA)
-      // read the value (ignore the JSON name again, should be "value")
+      // read the value (ignore the JSON name again, should be "v")
       jsonReader.readJsonName()
       val value = parentDeserializer.deserialize(valueType, jsonReader)
       jsonReader.skipAfter(JsonReader.CURLY_CLOSE)
