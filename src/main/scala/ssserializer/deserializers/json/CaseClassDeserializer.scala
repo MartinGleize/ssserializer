@@ -1,6 +1,7 @@
 package ssserializer.deserializers.json
 
 import ssserializer.deserializers.{DeserializationException, MasterDeserializer}
+import ssserializer.serializers.json.CaseClassSerializer
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -14,8 +15,8 @@ import scala.reflect.runtime.universe._
 class CaseClassDeserializer extends Deserializer[Product] {
 
   override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Product = {
-    val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
-    val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
+    val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
+    val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
     jsonReader.skipAfter(JsonReader.CURLY_OPEN)
     val args = new ArrayBuffer[Any]()
     for (((argName, argType), index) <- orderedArgs.zipWithIndex) {
@@ -64,7 +65,7 @@ class CaseClassDeserializer extends Deserializer[Product] {
       // TODO: handle the exception and rethrow some relevant helpful error message
       val classMirror = classLoaderMirror reflectClass classSymbol
 
-      val constructorSymbol = tpe.declaration(nme.CONSTRUCTOR)
+      val constructorSymbol = tpe.decl(termNames.CONSTRUCTOR)
 
       val defaultConstructor =
         if (constructorSymbol.isMethod) constructorSymbol.asMethod
@@ -85,7 +86,16 @@ class CaseClassDeserializer extends Deserializer[Product] {
         try {
           constructorMethod(args: _*).asInstanceOf[T]
         } catch {
-          case iae: IllegalArgumentException => throw new DeserializationException(iae, tpe)
+          case iae: IllegalArgumentException => {
+            val expectedParameterLists = defaultConstructor.paramLists.toString
+            val actualArguments = args.toString()
+            throw new DeserializationException(
+              "Expected one of these lists of parameters:" + "\n" +
+              expectedParameterLists + "\n" +
+              "Got these parameters instead:" + "\n" +
+              actualArguments
+              , tpe)
+          }
         }
       }
 

@@ -2,9 +2,9 @@ package ssserializer.deserializers
 
 import scala.reflect.runtime.universe._
 
-class DeserializationException(cause: Throwable, tpe: Type) extends Exception(cause) {
+class DeserializationException(message: String, tpe: Type) extends Exception(message) {
 
   override def getMessage: String = {
-    "Error trying to deserialize type " + tpe + (if (cause != null) "base exception: " + cause.getMessage else "")
+    "Error trying to deserialize type " + tpe + ":\n" + message
   }
 }

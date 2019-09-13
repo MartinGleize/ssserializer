@@ -30,6 +30,7 @@ class ApiTest extends UnitSpec {
   caseClassTests.foreach(test(_))
   caseClassMoreTests.foreach(test(_))
   caseClassDefaultParameterTests.foreach(test(_))
+  caseClassWithExtraValues.foreach(test(_))
   optionTests.foreach(test(_))
   tuple2Tests.foreach(test(_))
   tuple3Tests.foreach(test(_))

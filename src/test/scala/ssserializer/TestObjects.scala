@@ -1,6 +1,6 @@
 package ssserializer
 
-import ssserializer.deserializers.json.{BasketballTeam, EmployedPerson, Person}
+import ssserializer.deserializers.json.{BasketballTeam, EmployedPerson, Person, PersonWithExtraValues}
 
 object TestObjects {
 
@@ -82,6 +82,11 @@ object TestObjects {
     EmployedPerson("Mary", true),
     EmployedPerson("Mary II", hasJob = true),
     EmployedPerson("Timmy")
+  )
+
+  val caseClassWithExtraValues: Seq[PersonWithExtraValues] = Seq(
+    PersonWithExtraValues("John", 40),
+    PersonWithExtraValues("Mary", 50),
   )
 
   val optionTests: Seq[Option[String]] = Seq(

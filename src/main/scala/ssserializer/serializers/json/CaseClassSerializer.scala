@@ -12,8 +12,8 @@ import scala.reflect.runtime.universe._
 class CaseClassSerializer extends Serializer[Product] {
 
   override def serializeNonNull(product: Product, t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
-    val nonMethodMembers = t.members.sorted.filter(!_.isMethod)
-    val orderedArgs = nonMethodMembers.map(s => s.name -> s.info)
+    val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
+    val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
     val productArgs = product.productIterator.toList
     val size = productArgs.size
     w.write("{")
@@ -28,4 +28,25 @@ class CaseClassSerializer extends Serializer[Product] {
   }
 
   private def jsonifyArgName(argName: String): String = StringEscapeUtils.escapeJson(argName.trim)
+}
+
+object CaseClassSerializer {
+
+  /** Return all the parameter symbols, in order, in the primary constructor of a case class */
+  def parameterSymbols(caseClass: Type): Seq[Symbol] = {
+    // get exclusively the "case accessors", i.e. the accessors automatically created for the parameters of the main constructor
+    val caseAccessors = caseClass.members.sorted
+      .filter(_.isInstanceOf[MethodSymbol])
+      .map(_.asInstanceOf[MethodSymbol])
+      .filter(_.isCaseAccessor)
+    // build a set of all their names
+    val accessorNames = caseAccessors
+      .map(_.name.toString.trim)
+      .toSet
+    // get the type symbols of the non-methods exactly named that way (these will be the types of the case class parameters)
+    caseClass.members.sorted
+      .filter(!_.isMethod)
+      .filter(m => accessorNames.contains(m.name.toString.trim))
+  }
+
 }
