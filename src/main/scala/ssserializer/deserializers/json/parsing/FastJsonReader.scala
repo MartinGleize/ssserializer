@@ -6,13 +6,16 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.text.StringEscapeUtils
 
 import scala.collection.mutable
+
 /**
- * Direct implementation of a JSON reader that makes assumptions on the input: that it's well-formatted JSON, and that we
- * know what is the type of the next value to read (minor alternatives are possible, like null values)
- * Aimed to be very efficient but will break if the JSON is malformed in usually recoverable ways (for example an object
- * without closing curly brace)
+ * Implementation of a JSON reader using assumptions on the input:
+ * that it's well-formatted JSON,
+ * and that we know what is the type of the next value to read (minor alternatives are possible, like null values).
  *
- * @param reader
+ * Designed to be very efficient but will break if the JSON is malformed in usually recoverable ways
+ * (for example a JSON object without closing curly brace)
+ *
+ * @param reader the underlying reader (often an InputStreamReader) accessing the JSON
  */
 class FastJsonReader(override val reader: Reader) extends JsonReader {
 
@@ -30,13 +33,13 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     val res = readUntilSingleCharacterPattern(FastJsonReader.STRING_END)
     skipAfter(FastJsonReader.STRING_START) // consume the end "
     // unescape the result
-    StringEscapeUtils.unescapeJson('"' + res + '"')
+    '"' + StringEscapeUtils.unescapeJson(res) + '"'
   }
 
   /** Reads a JSON numeric value */
   override def readJsonNumber(): String = {
     consumeWhitespaces()
-    readAllOfSingleCharacterPattern(FastJsonReader.NUMBER)
+    readOneOrMoreSingleCharacterPattern(FastJsonReader.NUMBER)
   }
 
   /** Reads a JSON boolean value */
@@ -74,20 +77,19 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     skipAllOfSingleCharacterPattern(FastJsonReader.WHITESPACE)
   }
 
-  private def readAllOfSingleCharacterPattern(regex: Pattern): String = {
+  private def readOneOrMoreSingleCharacterPattern(regex: Pattern): String = {
     ensureNonEmpty()
     val sb = new mutable.StringBuilder()
     var lastCount = 0
-    while ({lastCount = countLeadingSingleCharacterPattern(regex); lastCount} == length) {
+    do {
+      // count the number of characters matching the regex (in the first iteration we expect at least 1)
+      lastCount = countLeadingSingleCharacterPattern(regex)
       // read the string
-      sb.appendAll(buffer.slice(start, start + length))
-      // flush the buffer and reads more JSON
-      readMore()
+      sb.appendAll(buffer.slice(start, start + lastCount))
+      // update the buffer
+      advance(lastCount)
     }
-    // finish the string
-    sb.appendAll(buffer.slice(start, start + lastCount))
-    // update the pointer
-    advance(lastCount)
+    while (length == 0 && readMore() > 0) // if we exhaust the buffer we fill it back up again and continue reading
     // build the string
     sb.toString()
   }
@@ -124,7 +126,6 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
 
   private def countLeadingSingleCharacterPattern(regex: Pattern): Int = {
     // assumes the text is not empty (length != 0)
-    val lol = text
     val matcher = regex.matcher(text)
     // find the first occurrence of characters (there should be something)
     val found = matcher.find()
@@ -160,11 +161,18 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
 
   private def ensureNonEmpty(): Unit = ensureAtLeast(1)
 
-  private def readMore(): Unit = {
-    // don't check that reader can still read
-    val amountRead = reader.read(buffer, 0, FastJsonReader.SIZE)
+  /** For debugging */
+  private def canReadMore: Boolean = length >= 0
+
+  private def readMore(): Int = {
+    // copy any remaining input (shouldn't ever be larger than 5 characters anyway: the length of "false")
+    System.arraycopy(buffer, start, buffer, 0, length)
     start = 0
-    length = amountRead
+    // this call will return -1 if we reach the end of the JSON, we turn it into 0 instead
+    val read = reader.read(buffer, length, FastJsonReader.SIZE - length)
+    val amountRead = if (read >= 0) read else 0
+    length += amountRead
+    length
   }
 
   override def close(): Unit = reader.close()
