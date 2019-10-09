@@ -17,9 +17,9 @@ trait SeqDeserializer[S] extends Deserializer[S] {
    * */
   def typeIterator(t: Type): Iterator[Type] = Iterator.continually(t.typeArgs.head)
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): S = {
+  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): S = {
     val typeIt = typeIterator(t)
-    jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
+    jsonReader.skipAfter(parsing.JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[Any]()
     var potentialElement: Option[Any] = null
     while (typeIt.hasNext && {potentialElement = deserializeNextElement(typeIt.next(), jsonReader, parentDeserializer); potentialElement.isDefined}) {
@@ -30,15 +30,15 @@ trait SeqDeserializer[S] extends Deserializer[S] {
     constructFinalObject(res, t)
   }
 
-  def deserializeNextElement(elementType: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Option[Any] = {
+  def deserializeNextElement(elementType: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Option[Any] = {
     // first try to look for the end of the JSON array
-    if (jsonReader.tryToConsumeNextToken(JsonReader.BRACKET_CLOSE)) {
+    if (jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)) {
       None
     } else {
       // can't read a "]" so a new element can be read
       val element = parentDeserializer.deserialize(elementType, jsonReader)
       // try to read a "," after (if it fails it likely means this would be the last element)
-      jsonReader.tryToConsumeNextToken(JsonReader.COMMA)
+      jsonReader.tryToConsumeToken(parsing.JsonReader.COMMA)
       Some(element)
     }
   }

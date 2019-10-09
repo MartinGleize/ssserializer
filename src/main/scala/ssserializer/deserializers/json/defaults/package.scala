@@ -9,7 +9,7 @@ package object defaults {
   val intDeserializer: NumberStringDeserializer[Int] = _.toInt
 
   val booleanDeserializer: StringParseDeserializer[Boolean] = new StringParseDeserializer[Boolean] {
-    override def read(jsonReader: JsonReader): String = jsonReader.readJsonBoolean()
+    override def read(jsonReader: parsing.JsonReader): String = jsonReader.readJsonBoolean()
 
     override def parse(stringResult: String): Boolean = stringResult.toBoolean
   }
@@ -20,5 +20,5 @@ package object defaults {
 
   val setDeserializer: SeqDeserializer[Set[_]] = _.toSet
 
-  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
+  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], parsing.JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
 }

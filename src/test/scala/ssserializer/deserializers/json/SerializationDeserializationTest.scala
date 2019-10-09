@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets
 import org.scalatest.Assertion
 import ssserializer.serializers.json.JsonSerializer
 import ssserializer.TestObjects._
+import ssserializer.deserializers.json.parsing.{JsonReader, ScannerJsonReader}
 
 import scala.reflect.runtime.universe._
 
@@ -13,7 +14,6 @@ class SerializationDeserializationTest extends JsonDeserializerSpec {
 
   val serializer = new JsonSerializer()
   val deserializer = new JsonDeserializer()
-
 
 
   "A JSON serialization/deserialization sequence" should "return the same object" in {
@@ -39,7 +39,7 @@ class SerializationDeserializationTest extends JsonDeserializerSpec {
   }
 
   def serializeDeserialize[T : TypeTag](data: T): T = {
-    // create the transitional stream (a byte buffer)
+    // create the intermediate stream (a byte buffer)
     val output = new ByteArrayOutputStream()
     val writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8))
     // serialize
@@ -47,7 +47,7 @@ class SerializationDeserializationTest extends JsonDeserializerSpec {
     writer.close()
     // deserialize
     val input = new InputStreamReader(new ByteArrayInputStream(output.toByteArray), StandardCharsets.UTF_8)
-    val jsonReader = new JsonReader(input)
+    val jsonReader = new ScannerJsonReader(input)
     val res = deserializer.deserialize(typeOf[T], jsonReader)
     input.close()
     res.asInstanceOf[T]

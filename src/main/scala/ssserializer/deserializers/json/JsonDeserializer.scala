@@ -4,9 +4,9 @@ import ssserializer.deserializers.MasterDeserializer
 import ssserializer.typing.detectors._
 import ssserializer.typing.Detector
 
-class JsonDeserializer extends MasterDeserializer[JsonReader] {
+class JsonDeserializer extends MasterDeserializer[parsing.JsonReader] {
 
-  override val deserializers: Seq[(Detector, ssserializer.deserializers.Deserializer[_, JsonReader])] = Seq(
+  override val deserializers: Seq[(Detector, ssserializer.deserializers.Deserializer[_, parsing.JsonReader])] = Seq(
     doubleDetector -> defaults.doubleDeserializer,
     longDetector -> defaults.longDeserializer,
     intDetector -> defaults.intDeserializer,

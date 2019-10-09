@@ -2,7 +2,8 @@ package ssserializer.codecs
 
 import java.io.{BufferedWriter, StringReader, StringWriter}
 
-import ssserializer.deserializers.json.JsonReader
+import ssserializer.deserializers.json.parsing.JsonReader
+
 
 // This is just proof of concept code, only for Scala 2.13
 

@@ -14,10 +14,10 @@ import scala.reflect.runtime.universe._
  */
 class CaseClassDeserializer extends Deserializer[Product] {
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Product = {
+  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Product = {
     val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
     val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
-    jsonReader.skipAfter(JsonReader.CURLY_OPEN)
+    jsonReader.skipAfter(parsing.JsonReader.CURLY_OPEN)
     val args = new ArrayBuffer[Any]()
     for (((argName, argType), index) <- orderedArgs.zipWithIndex) {
       // ignore the name of the parameter (but we could check it in theory)
@@ -27,9 +27,9 @@ class CaseClassDeserializer extends Deserializer[Product] {
       args += arg
       // read the separating comma
       if (index < orderedArgs.size - 1)
-        jsonReader.skipAfter(JsonReader.COMMA)
+        jsonReader.skipAfter(parsing.JsonReader.COMMA)
     }
-    jsonReader.skipAfter(JsonReader.CURLY_CLOSE)
+    jsonReader.skipAfter(parsing.JsonReader.CURLY_CLOSE)
     // build the case class object with this list of arguments
     newProduct(t, args.toSeq)
   }

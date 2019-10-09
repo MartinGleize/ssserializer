@@ -8,10 +8,10 @@ import scala.reflect.runtime.universe._
 
 class MapDeserializer extends Deserializer[Map[_, _]] {
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Map[_, _] = {
+  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Map[_, _] = {
     val keyType = t.typeArgs(0)
     val valueType = t.typeArgs(1)
-    jsonReader.skipAfter(JsonReader.BRACKET_OPEN)
+    jsonReader.skipAfter(parsing.JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[(Any, Any)]()
     var potentialElement: Option[(Any, Any)] = null
     while ({potentialElement = deserializeNextKeyValuePair(keyType, valueType, jsonReader, parentDeserializer); potentialElement.isDefined}) {
@@ -22,23 +22,23 @@ class MapDeserializer extends Deserializer[Map[_, _]] {
     immutable.Map(res.toSeq:_*)
   }
 
-  def deserializeNextKeyValuePair(keyType: Type, valueType: Type, jsonReader: JsonReader, parentDeserializer: MasterDeserializer[JsonReader]): Option[(Any, Any)] = {
+  def deserializeNextKeyValuePair(keyType: Type, valueType: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Option[(Any, Any)] = {
     // first try to look for the end of the JSON array
-    if (jsonReader.tryToConsumeNextToken(JsonReader.BRACKET_CLOSE)) {
+    if (jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)) {
       None
     } else {
       // can't read a "]" so a new element can be read
-      jsonReader.skipAfter(JsonReader.CURLY_OPEN)
+      jsonReader.skipAfter(parsing.JsonReader.CURLY_OPEN)
       // read the key (ignore the JSON name, should be "k")
       jsonReader.readJsonName()
       val key = parentDeserializer.deserialize(keyType, jsonReader)
-      jsonReader.skipAfter(JsonReader.COMMA)
+      jsonReader.skipAfter(parsing.JsonReader.COMMA)
       // read the value (ignore the JSON name again, should be "v")
       jsonReader.readJsonName()
       val value = parentDeserializer.deserialize(valueType, jsonReader)
-      jsonReader.skipAfter(JsonReader.CURLY_CLOSE)
+      jsonReader.skipAfter(parsing.JsonReader.CURLY_CLOSE)
       // try to read a "," after (if it fails it likely means this would be the last element)
-      jsonReader.tryToConsumeNextToken(JsonReader.COMMA)
+      jsonReader.tryToConsumeToken(parsing.JsonReader.COMMA)
       Some((key, value))
     }
   }
