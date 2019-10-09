@@ -80,10 +80,9 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
   private def readOneOrMoreSingleCharacterPattern(regex: Pattern): String = {
     ensureNonEmpty()
     val sb = new mutable.StringBuilder()
-    var lastCount = 0
     do {
       // count the number of characters matching the regex (in the first iteration we expect at least 1)
-      lastCount = countLeadingSingleCharacterPattern(regex)
+      val lastCount = countLeadingSingleCharacterPattern(regex)
       // read the string
       sb.appendAll(buffer.slice(start, start + lastCount))
       // update the buffer state
@@ -97,12 +96,11 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
 
   private def readUntilSingleCharacterPattern(regex: Pattern): String = {
     val sb = new mutable.StringBuilder()
-    var lastCount = 0
     // we read as long as we don't find the pattern (and assume that we will find it before the end of the stream)
     do {
       ensureNonEmpty()
       // count characters until we encounter the regex (if not found, it returns 'length' because the count hasn't stopped)
-      lastCount = countUntilSingleCharacterPattern(regex)
+      val lastCount = countUntilSingleCharacterPattern(regex)
       // read the string
       sb.appendAll(buffer.slice(start, start + lastCount))
       // update the buffer state
@@ -115,13 +113,13 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
 
   private def skipAllOfSingleCharacterPattern(regex: Pattern): Unit = {
     ensureNonEmpty()
-    var lastCount = 0
-    while ({lastCount = countLeadingSingleCharacterPattern(regex); lastCount} == length) {
-      // flush the buffer and reads more JSON
-      readMore()
+    do {
+      // consume every character matching the regex
+      val lastCount = countLeadingSingleCharacterPattern(regex)
+      // update the buffer state
+      advance(lastCount)
     }
-    // lastCount is strictly less than length at this point TODO: or the text has ended
-    advance(lastCount)
+    while (length == 0 && readMore() > 0) // we continue as long as we exhaust the buffer and the JSON hasn't ended
   }
 
   private def countLeadingSingleCharacterPattern(regex: Pattern): Int = {
