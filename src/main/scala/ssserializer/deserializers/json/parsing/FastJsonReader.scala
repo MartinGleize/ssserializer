@@ -86,29 +86,29 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
       lastCount = countLeadingSingleCharacterPattern(regex)
       // read the string
       sb.appendAll(buffer.slice(start, start + lastCount))
-      // update the buffer
+      // update the buffer state
       advance(lastCount)
     }
-    while (length == 0 && readMore() > 0) // if we exhaust the buffer we fill it back up again and continue reading
+    while (length == 0 && readMore() > 0) // if we exhaust the buffer, we fill it back up again and continue reading
+    // unless it's the end of the stream, in that case return what we have
     // build the string
     sb.toString()
   }
 
   private def readUntilSingleCharacterPattern(regex: Pattern): String = {
-    ensureNonEmpty()
     val sb = new mutable.StringBuilder()
     var lastCount = 0
     // we read as long as we don't find the pattern (and assume that we will find it before the end of the stream)
-    while ({lastCount = countUntilSingleCharacterPattern(regex); lastCount} < 0) {
+    do {
+      ensureNonEmpty()
+      // count characters until we encounter the regex (if not found, it returns 'length' because the count hasn't stopped)
+      lastCount = countUntilSingleCharacterPattern(regex)
       // read the string
-      sb.appendAll(buffer.slice(start, start + length))
-      // flush the buffer and reads more JSON
-      readMore()
+      sb.appendAll(buffer.slice(start, start + lastCount))
+      // update the buffer state
+      advance(lastCount)
     }
-    // finish the string
-    sb.appendAll(buffer.slice(start, start + lastCount))
-    // update the pointer
-    advance(lastCount)
+    while (length == 0) // if we exhaust the buffer without finding the regex, try again with a fresh read, we will find it
     // build the string
     sb.toString()
   }
@@ -145,7 +145,7 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
       matcher.start()
     } else {
       // not found
-      -1
+      length
     }
   }
 
