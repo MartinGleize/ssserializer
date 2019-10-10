@@ -94,13 +94,15 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     sb.toString()
   }
 
-  private def readOneOrMoreSingleCharacterPattern(regex: Pattern): String = {
+  private def readOneOrMoreSingleCharacterPattern(regex: Pattern, ignoreReads: Boolean = false): String = {
     val sb = new mutable.StringBuilder()
     var lastCount = 0
     // if we exhaust the buffer, we fill it back up again and continue reading
     while (ensureNonEmpty() && {lastCount = countLeadingSingleCharacterPattern(regex); lastCount} > 0) {
-      // read the string
-      sb.appendAll(buffer.slice(start, start + lastCount))
+      if (!ignoreReads) {
+        // read the string
+        sb.appendAll(buffer.slice(start, start + lastCount))
+      }
       // update the buffer state
       advance(lastCount)
     }
@@ -110,14 +112,7 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
   }
 
   private def skipAllOfSingleCharacterPattern(regex: Pattern): Unit = {
-    ensureNonEmpty()
-    do {
-      // consume every character matching the regex
-      val lastCount = countLeadingSingleCharacterPattern(regex)
-      // update the buffer state
-      advance(lastCount)
-    }
-    while (length == 0 && readMore() > 0) // we continue as long as we exhaust the buffer and the JSON hasn't ended
+    readOneOrMoreSingleCharacterPattern(regex, ignoreReads = true)
   }
 
   private def countLeadingSingleCharacterPattern(regex: Pattern): Int = {
