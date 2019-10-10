@@ -77,23 +77,6 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     skipAllOfSingleCharacterPattern(FastJsonReader.WHITESPACE)
   }
 
-  private def readOneOrMoreSingleCharacterPattern(regex: Pattern): String = {
-    ensureNonEmpty()
-    val sb = new mutable.StringBuilder()
-    do {
-      // count the number of characters matching the regex (in the first iteration we expect at least 1)
-      val lastCount = countLeadingSingleCharacterPattern(regex)
-      // read the string
-      sb.appendAll(buffer.slice(start, start + lastCount))
-      // update the buffer state
-      advance(lastCount)
-    }
-    while (length == 0 && readMore() > 0) // if we exhaust the buffer, we fill it back up again and continue reading
-    // unless it's the end of the stream, in that case return what we have
-    // build the string
-    sb.toString()
-  }
-
   private def readUntilSingleCharacterPattern(regex: Pattern): String = {
     val sb = new mutable.StringBuilder()
     // we read as long as we don't find the pattern (and assume that we will find it before the end of the stream)
@@ -107,6 +90,21 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
       advance(lastCount)
     }
     while (length == 0) // if we exhaust the buffer without finding the regex, try again with a fresh read, we will find it
+    // build the string
+    sb.toString()
+  }
+
+  private def readOneOrMoreSingleCharacterPattern(regex: Pattern): String = {
+    val sb = new mutable.StringBuilder()
+    var lastCount = 0
+    // if we exhaust the buffer, we fill it back up again and continue reading
+    while (ensureNonEmpty() && {lastCount = countLeadingSingleCharacterPattern(regex); lastCount} > 0) {
+      // read the string
+      sb.appendAll(buffer.slice(start, start + lastCount))
+      // update the buffer state
+      advance(lastCount)
+    }
+    // if it's the end of the stream, or some invalid character has been found:
     // build the string
     sb.toString()
   }
@@ -130,7 +128,8 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     if (found && matcher.start() == 0) {
       matcher.end()
     } else {
-      throw new RuntimeException("Malformed JSON serialization, expected: " + regex + " found " + text.charAt(0))
+      // either we didn't find anything or we found it by skipping other characters
+      0
     }
   }
 
@@ -152,12 +151,11 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     length -= count
   }
 
-  private def ensureAtLeast(minLength: Int): Unit = {
-    if (length < minLength)
-      readMore()
+  private def ensureAtLeast(minLength: Int): Boolean = {
+    if (length < minLength) readMore() > 0 else true
   }
 
-  private def ensureNonEmpty(): Unit = ensureAtLeast(1)
+  private def ensureNonEmpty(): Boolean = ensureAtLeast(1)
 
   /** For debugging */
   private def canReadMore: Boolean = length >= 0
