@@ -14,10 +14,13 @@ trait MasterDeserializer[Input] extends Deserializer[Any, Input] {
   /** Pairs of a detector and the deserializer supporting the type it detects */
   def deserializers: Seq[(Detector, Deserializer[_, Input])]
 
+  /** Maps the types to the correct deserializers. */
+  val typeMapper = new TypeMapper[Deserializer[_, Input]]
+
   override def deserialize(t: Type, src: Input, parentDeserializer: MasterDeserializer[Input] = null): Any = {
     // TODO: throw some custom exception for non-handled type
     // TODO: throw some internal dev-only exception for parentDeserializer not being null on this call
-    val deserializer = TypeMapper.map(t, deserializers).getOrElse(throw new RuntimeException("Type not handled: " + t))
+    val deserializer = typeMapper.map(t, deserializers).getOrElse(throw new RuntimeException("Type not handled: " + t))
     deserializer.deserialize(t, src, this)
   }
 
