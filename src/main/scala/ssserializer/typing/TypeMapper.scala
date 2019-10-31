@@ -14,6 +14,7 @@ import scala.collection.JavaConversions._
  */
 class TypeMapper[E] {
 
+  /** The cache uses reference equality/hashcode, for fast performance (and basically the same functionality under our assumptions) */
   private val cache: mutable.Map[Type, Option[E]] = new util.IdentityHashMap[Type, Option[E]]()
 
   def map(t: Type, detectedObjects: Seq[(Detector, E)]): Option[E] = {

@@ -1,8 +1,12 @@
 package ssserializer.deserializers.json
 
+import java.util
+import scala.collection.JavaConversions._
+
 import ssserializer.deserializers.{DeserializationException, MasterDeserializer}
 import ssserializer.serializers.json.CaseClassSerializer
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
@@ -14,8 +18,14 @@ import scala.reflect.runtime.universe._
  */
 class CaseClassDeserializer extends Deserializer[Product] {
 
+  /** Cache for the parameters of case class types */
+  private val cacheParameters: mutable.Map[Type, Seq[Symbol]] = new util.IdentityHashMap[Type, Seq[Symbol]]()
+  /** Cache for the reflected constructor of case class types */
+  private val cacheConstructor: mutable.Map[Type, ReflectionHelpers.CaseClassFactory[Product]] =
+    new util.IdentityHashMap[Type, ReflectionHelpers.CaseClassFactory[Product]]()
+
   override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Product = {
-    val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
+    val parameterSymbols = cacheParameters.getOrElseUpdate(t, CaseClassSerializer.parameterSymbols(t))
     val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
     jsonReader.skipAfter(parsing.JsonReader.CURLY_OPEN)
     val args = new ArrayBuffer[Any]()
@@ -35,7 +45,7 @@ class CaseClassDeserializer extends Deserializer[Product] {
   }
 
   def newProduct(t: Type, args: Seq[_]): Product = {
-    val productFactory = new ReflectionHelpers.CaseClassFactory[Product](t)
+    val productFactory = cacheConstructor.getOrElseUpdate(t, new ReflectionHelpers.CaseClassFactory[Product](t))
     val res = productFactory.buildWith(args)
     res
   }
