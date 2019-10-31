@@ -19,14 +19,16 @@ import scala.reflect.runtime.universe._
 class CaseClassDeserializer extends Deserializer[Product] {
 
   /** Cache for the parameters of case class types */
-  private val cacheParameters: mutable.Map[Type, Seq[Symbol]] = new util.IdentityHashMap[Type, Seq[Symbol]]()
+  private val cacheParameters: mutable.Map[Type, Seq[(String, Type)]] = new util.IdentityHashMap[Type, Seq[(String, Type)]]()
   /** Cache for the reflected constructor of case class types */
   private val cacheConstructor: mutable.Map[Type, ReflectionHelpers.CaseClassFactory[Product]] =
     new util.IdentityHashMap[Type, ReflectionHelpers.CaseClassFactory[Product]]()
 
   override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Product = {
-    val parameterSymbols = cacheParameters.getOrElseUpdate(t, CaseClassSerializer.parameterSymbols(t))
-    val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
+    val orderedArgs = cacheParameters.getOrElseUpdate(t, {
+      val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
+      parameterSymbols.map(s => s.name.toString -> s.info)
+    })
     jsonReader.skipAfter(parsing.JsonReader.CURLY_OPEN)
     val args = new ArrayBuffer[Any]()
     for (((argName, argType), index) <- orderedArgs.zipWithIndex) {
@@ -41,7 +43,7 @@ class CaseClassDeserializer extends Deserializer[Product] {
     }
     jsonReader.skipAfter(parsing.JsonReader.CURLY_CLOSE)
     // build the case class object with this list of arguments
-    newProduct(t, args.toSeq)
+    newProduct(t, args)
   }
 
   def newProduct(t: Type, args: Seq[_]): Product = {
