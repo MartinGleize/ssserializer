@@ -133,7 +133,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   private def countLeadingSingleCharacterPattern(possibleChars: Array[Char]): Int = {
     // assumes the text is not empty (length != 0)
     var i = 0
-    while (possibleChars.contains(charAt(i))) {
+    while (i < length && possibleChars.contains(charAt(i))) {
       i += 1
     }
     i
