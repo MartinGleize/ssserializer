@@ -1,8 +1,6 @@
 package ssserializer.deserializers.json.parsing
 import java.io.{Reader, StringReader}
 
-import scala.collection.mutable
-
 /**
  * Implementation of a JSON reader using assumptions on the input:
  * that it's well-formatted JSON,
@@ -54,16 +52,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   override def tryToConsumeToken(token: String): Boolean = {
     consumeWhitespaces()
     ensureAtLeast(token.length)
-    val textStartsWithToken = {
-      var res = true
-      var i = 0
-      while (i < token.length) {
-        res &&= charAt(i) == token(i)
-        i += 1
-      }
-      res
-    }
-    if (textStartsWithToken) {
+    if (startsWithToken(token)) {
       // we can indeed read this token
       advance(token.length)
       true
@@ -83,7 +72,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   }
 
   private def readStringValue(): String = {
-    val sb = new mutable.StringBuilder()
+    val sb = new java.lang.StringBuilder()
     // we read as long as we don't find the pattern (and assume that we will find it before the end of the stream)
     do {
       ensureNonEmpty()
@@ -96,30 +85,30 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
         i
       }
       // read the string
-      sb.appendAll(buffer.slice(start, start + lastCount))
+      sb.append(buffer.slice(start, start + lastCount))
       // update the buffer state
       advance(lastCount)
     }
     while (length == 0) // if we exhaust the buffer without finding the regex, try again with a fresh read, we will find it
     // build the string
-    sb.toString()
+    sb.toString
   }
 
   private def readOneOrMoreSingleCharacterPattern(possibleChars: Array[Char], ignoreReads: Boolean = false): String = {
-    val sb = new mutable.StringBuilder()
+    val sb = new java.lang.StringBuilder()
     var lastCount = 0
     // if we exhaust the buffer, we fill it back up again and continue reading
     while (ensureNonEmpty() && {lastCount = countLeadingSingleCharacterPattern(possibleChars); lastCount} > 0) {
       if (!ignoreReads) {
         // read the string
-        sb.appendAll(buffer.slice(start, start + lastCount))
+        sb.append(buffer.slice(start, start + lastCount))
       }
       // update the buffer state
       advance(lastCount)
     }
     // if it's the end of the stream, or some invalid character has been found:
     // build the string
-    sb.toString()
+    sb.toString
   }
 
   private def skipAllOfSingleCharacterPattern(possibleChars: Array[Char]): Unit = {
@@ -145,6 +134,16 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   }
 
   private def ensureNonEmpty(): Boolean = ensureAtLeast(1)
+
+  private def startsWithToken(token: String): Boolean = {
+    var i = 0
+    while (i < token.length) {
+      if (charAt(i) != token(i))
+        return false
+      i += 1
+    }
+    true
+  }
 
   private def contains(c: Char, possibleChars: Array[Char]): Boolean = {
     var i = 0
