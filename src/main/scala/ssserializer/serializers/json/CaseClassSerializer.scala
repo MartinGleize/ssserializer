@@ -1,6 +1,6 @@
 package ssserializer.serializers.json
 
-import org.apache.commons.text.StringEscapeUtils
+import ssserializer.deserializers.json.parsing.JsonUtil
 import ssserializer.serializers.MasterSerializer
 
 import scala.reflect.runtime.universe._
@@ -27,7 +27,7 @@ class CaseClassSerializer extends Serializer[Product] {
     w.write("}")
   }
 
-  private def jsonifyArgName(argName: String): String = StringEscapeUtils.escapeJson(argName.trim)
+  private def jsonifyArgName(argName: String): String = JsonUtil.escape(argName.trim)
 }
 
 object CaseClassSerializer {

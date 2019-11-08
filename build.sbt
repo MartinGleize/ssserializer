@@ -9,6 +9,3 @@ libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 // scalatest
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.8" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
-// Apache Commons Text
-// https://mvnrepository.com/artifact/org.apache.commons/commons-text
-libraryDependencies += "org.apache.commons" % "commons-text" % "1.7"

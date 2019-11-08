@@ -1,6 +1,5 @@
 package ssserializer.deserializers.json
 
-import org.apache.commons.text.StringEscapeUtils
 import ssserializer.deserializers.json.parsing.JsonReader
 
 class StringDeserializer extends StringParseDeserializer[String] {

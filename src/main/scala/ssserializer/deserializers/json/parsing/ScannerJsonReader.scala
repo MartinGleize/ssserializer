@@ -4,7 +4,6 @@ import java.io.{Closeable, Reader, StringReader}
 import java.util.Scanner
 import java.util.regex.Pattern
 
-import org.apache.commons.text.StringEscapeUtils
 import ssserializer.deserializers.json.parsing
 import ssserializer.util.RegexUtils
 
@@ -29,7 +28,7 @@ class ScannerJsonReader(override val reader: Reader) extends JsonReader {
   def readJsonString(): String = {
     val res = next(parsing.JsonReader.STRING)
     // unescape
-    StringEscapeUtils.unescapeJson(res)
+    JsonUtil.unescape(res)
   }
 
   /** Read a JSON numeric value */

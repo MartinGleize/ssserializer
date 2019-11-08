@@ -2,9 +2,6 @@ package ssserializer.deserializers.json.parsing
 import java.io.{Reader, StringReader}
 import java.util.regex.Pattern
 
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.text.StringEscapeUtils
-
 import scala.collection.mutable
 
 /**
@@ -33,7 +30,7 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
     val res = readUntilSingleCharacterPattern(FastJsonReader.STRING_END)
     skipAfter(FastJsonReader.STRING_START) // consume the end "
     // unescape the result
-    '"' + StringEscapeUtils.unescapeJson(res) + '"'
+    '"' + JsonUtil.unescape(res) + '"'
   }
 
   /** Reads a JSON numeric value */
@@ -58,7 +55,7 @@ class FastJsonReader(override val reader: Reader) extends JsonReader {
   override def tryToConsumeToken(token: String): Boolean = {
     consumeWhitespaces()
     ensureAtLeast(token.length)
-    if (StringUtils.startsWith(text, token)) {
+    if (text.toString.startsWith(token)) {
       // we can indeed read this token
       advance(token.length)
       true
