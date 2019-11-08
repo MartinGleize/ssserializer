@@ -1,8 +1,6 @@
 package ssserializer.deserializers.json.parsing
 import java.io.{Reader, StringReader}
 
-import org.apache.commons.text.StringEscapeUtils
-
 import scala.collection.mutable
 
 /**
@@ -23,8 +21,6 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   private var start = 0
   private var length = 0
   private def charAt(pos: Int): Char = buffer(start + pos)
-  private def firstChar: Char = buffer(start)
-  private def text: CharSequence = new CharArraySequence(buffer, start, length)
 
   /** Reads a JSON string value */
   override def readJsonString(): String = {
@@ -33,7 +29,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
     val res = readStringValue()
     skipAfter(ReallyFastJsonReader.STRING_START) // consume the end "
     // unescape the result
-    '"' + StringEscapeUtils.unescapeJson(res) + '"'
+    '"' + JsonUtil.unescape(res) + '"'
   }
 
   /** Reads a JSON numeric value */
@@ -50,7 +46,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   /** Consumes exactly the next token (whitespaces not allowed) */
   override def skipAfter(token: String): Unit = {
     if (!tryToConsumeToken(token)) {
-      throw new RuntimeException("Malformed JSON serialization, expected: " + token + " found " + text.charAt(0))
+      throw new RuntimeException("Malformed JSON serialization, expected: " + token + " found " + charAt(0))
     }
   }
 
@@ -79,7 +75,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
     val res = tokens.collectFirst {
       case token if tryToConsumeToken(token) => token
     }
-    res.getOrElse(throw new RuntimeException("Malformed JSON serialization, expected one of: " + tokens + " found " + text.charAt(0)))
+    res.getOrElse(throw new RuntimeException("Malformed JSON serialization, expected one of: " + tokens + " found " + charAt(0)))
   }
 
   private def consumeWhitespaces(): Unit = {
@@ -133,7 +129,7 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   private def countLeadingSingleCharacterPattern(possibleChars: Array[Char]): Int = {
     // assumes the text is not empty (length != 0)
     var i = 0
-    while (i < length && possibleChars.contains(charAt(i))) {
+    while (i < length && contains(charAt(i), possibleChars)) {
       i += 1
     }
     i
@@ -149,6 +145,16 @@ class ReallyFastJsonReader(override val reader: Reader) extends JsonReader {
   }
 
   private def ensureNonEmpty(): Boolean = ensureAtLeast(1)
+
+  private def contains(c: Char, possibleChars: Array[Char]): Boolean = {
+    var i = 0
+    while (i < possibleChars.length) {
+      if (c == possibleChars(i))
+        return true
+      i += 1
+    }
+    false
+  }
 
   /** For debugging */
   private def canReadMore: Boolean = length >= 0
