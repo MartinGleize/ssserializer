@@ -1,8 +1,5 @@
 package ssserializer.serializers
 
-import java.io.OutputStream
-
-import ssserializer.deserializers.MasterDeserializer
 import ssserializer.typing.TypeMapper
 import ssserializer.typing._
 

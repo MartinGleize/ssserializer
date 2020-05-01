@@ -1,17 +1,15 @@
 package ssserializer.serializers.json
-import ssserializer.serializers.MasterSerializer
+import java.io.BufferedWriter
 
-import scala.reflect.runtime.universe._
+class OptionSerializer extends ssserializer.serializers.generic.OptionSerializer[BufferedWriter] with NullHandlingSerializer[Option[_]] {
 
-class OptionSerializer extends Serializer[Option[_]] {
-
-  override def serializeNonNull(data: Option[_], t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
-    val elementType = t.typeArgs.head
+  /** Happens before the option is serialized */
+  override def outputStart(w: Writer): Unit = {
     w.write("[")
-    if (data.isDefined) {
-      parentSerializer.serialize(data.get, elementType, w)
-    }
-    w.write("]")
   }
 
+  /** Happens after the value of the option has been serialized */
+  override def outputEnd(w: Writer): Unit = {
+    w.write("]")
+  }
 }

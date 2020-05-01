@@ -1,27 +1,35 @@
 package ssserializer.serializers.json
 
-import ssserializer.serializers.MasterSerializer
+import java.io.BufferedWriter
 
-import scala.reflect.runtime.universe._
+class MapSerializer extends ssserializer.serializers.generic.MapSerializer[BufferedWriter] with NullHandlingSerializer[Map[_, _]] {
 
-class MapSerializer extends Serializer[Map[_, _]] {
-
-  override def serializeNonNull(map: Map[_, _], t: Type, w: Writer, parentSerializer: MasterSerializer[Writer]): Unit = {
+  /** Happens at the very start, before any (key,value) pair is serialized */
+  override def outputStart(w: BufferedWriter): Unit = {
     w.write("[")
-    val keyType = t.typeArgs(0)
-    val valueType = t.typeArgs(1)
-    val size = map.size
-    for (((key, value), index) <- map.zipWithIndex) {
-      w.write("{\"k\":")
-      parentSerializer.serialize(key, keyType, w)
-      w.write(",\"v\":")
-      parentSerializer.serialize(value, valueType, w)
-      w.write("}")
-      if (index != size - 1) {
-        w.write(",")
-      }
-    }
+  }
+
+  /** Happens at the very end, after all (key,value) pairs have been serialized (also if the map was empty) */
+  override def outputEnd(w: BufferedWriter): Unit = {
     w.write("]")
+  }
+
+  /** Happens before each (key,value) pair is serialized */
+  override def outputBeforeKey(w: BufferedWriter): Unit = {
+    w.write("{\"k\":")
+  }
+
+  /** Happens before each value of a (key,value) pair is serialized (after its key has been serialized) */
+  override def outputBeforeValue(w: BufferedWriter): Unit = {
+    w.write(",\"v\":")
+  }
+
+  /** Happens after the value of a (key,value) pair is serialized */
+  override def outputAfterValue(w: BufferedWriter, hasNextEntry: Boolean): Unit = {
+    w.write("}")
+    if (hasNextEntry) {
+      w.write(",")
+    }
   }
 
 }

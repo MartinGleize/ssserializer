@@ -10,7 +10,7 @@ trait Serializer[Output] {
 
   def serialize(data: Any, t: Type, dest: Output, parentSerializer: MasterSerializer[Output] = null): Unit
 
-  final def serialize[T : TypeTag](data: T, dest: Output): Unit = {
+  def serialize[T : TypeTag](data: T, dest: Output): Unit = {
     // in effect, this is type erasure
     serialize(data, typeOf[T], dest)
   }

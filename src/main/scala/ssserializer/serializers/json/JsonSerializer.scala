@@ -28,4 +28,11 @@ class JsonSerializer extends MasterSerializer[BufferedWriter] {
     caseClassDetector -> new CaseClassSerializer()
   )
 
+  /*########### Mixins for serializers with simple and composable implementations as iterator serializations ######## */
+
+  class SeqSerializer[S <: Iterable[_]] extends ssserializer.serializers.generic.SeqSerializer[S, BufferedWriter]
+    with IteratorSerializer[S]
+
+  class TupleSerializer extends ssserializer.serializers.generic.TupleSerializer[BufferedWriter]
+    with IteratorSerializer[Product]
 }

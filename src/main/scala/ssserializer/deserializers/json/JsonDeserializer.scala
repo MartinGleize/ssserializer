@@ -14,7 +14,7 @@ class JsonDeserializer extends MasterDeserializer[parsing.JsonReader] {
     stringDetector -> defaults.stringDeserializer,
     optionDetector -> new OptionDeserializer(),
     arrayDetector -> defaults.arrayDeserializer,
-    seqDetector[List[_]] -> new IterableOpsDeserializer[List](), // IntelliJ's Scala plugin falsely shows a compilation error here, the implicit should be found
+    seqDetector[List[_]] -> new IterableOpsDeserializer[List](),
     seqDetector[Vector[_]] -> new IterableOpsDeserializer[Vector](),
     seqDetector[Seq[_]] -> defaults.seqDeserializer,
     setDetector -> defaults.setDeserializer,

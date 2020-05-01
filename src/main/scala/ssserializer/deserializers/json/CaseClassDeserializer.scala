@@ -1,9 +1,10 @@
 package ssserializer.deserializers.json
 
 import java.util
-import scala.collection.JavaConversions._
 
+import scala.collection.JavaConversions._
 import ssserializer.deserializers.{DeserializationException, MasterDeserializer}
+import ssserializer.serializers.generic.CaseClassSerializer
 import ssserializer.serializers.json.CaseClassSerializer
 
 import scala.collection.mutable

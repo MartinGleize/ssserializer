@@ -4,7 +4,7 @@ import ssserializer.serializers.MasterSerializer
 
 import scala.reflect.runtime.universe._
 
-trait StringWriterSerializer[T] extends Serializer[T] {
+trait StringWriterSerializer[T] extends NullHandlingSerializer[T] {
 
   def serialize(data: T, t: Type): String
 
