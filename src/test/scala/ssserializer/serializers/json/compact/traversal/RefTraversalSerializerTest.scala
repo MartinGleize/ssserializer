@@ -1,8 +1,7 @@
-package ssserializer.serializers.json.compact
+package ssserializer.serializers.json.compact.traversal
 
 import org.scalatest.Assertion
 import ssserializer.UnitSpec
-import ssserializer.serializers.json.compact.traversal.{CompactJsonMemory, RefTraversalSerializer}
 
 import scala.reflect.runtime.universe._
 

@@ -7,6 +7,10 @@ import scala.reflect.runtime.universe._
   */
 package object detectors {
 
+  val anyDetector: Detector = Detector.ofExactBaseType(typeOf[Any]) // should detect everything
+
+  val refDetector: Detector = Detector.ofExactBaseType(typeOf[AnyRef])
+
   /*########### VALUE TYPES ##############*/
 
   val doubleDetector: Detector = _ =:= typeOf[Double]

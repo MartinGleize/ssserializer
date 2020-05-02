@@ -24,8 +24,8 @@ class RefTraversalSerializer extends MasterSerializer[CompactJsonMemory] {
     caseClassDetector -> new CaseClassTraversalSerializer()
   )
 
-  class SeqTraversalSerializer[S <: Iterable[_]] extends IteratorTraversalSerializer[S]
-    with ssserializer.serializers.generic.SeqSerializer[S, CompactJsonMemory]
+  class SeqTraversalSerializer[S <: Iterable[_]] extends ssserializer.serializers.generic.SeqSerializer[S, CompactJsonMemory]
+    with IteratorTraversalSerializer[S]
 
   /*
   class TupleTraversalSerializer extends ssserializer.serializers.generic.TupleSerializer[CompactJsonMemory]

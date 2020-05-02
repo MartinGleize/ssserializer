@@ -26,4 +26,6 @@ class CompactJsonMemory {
 
   def refs: Seq[(Any, Type)] = refList.toList
 
+  def indexOf(ref: Any): Int = refPositions.getOrDefault(ref, -1)
+
 }
