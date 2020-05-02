@@ -9,7 +9,7 @@ trait OptionSerializer[Output] extends NullHandlingSerializer[Option[_], Output]
   def outputStart(output: Output): Unit
 
   /** Happens after the value of the option has been serialized */
-  def outputEnd(output: Output): Unit
+  def outputEnd(option: Option[_], output: Output): Unit
 
   override def serializeNonNull(data: Option[_], t: Type, output: Output, parentSerializer: MasterSerializer[Output]): Unit = {
     val elementType = t.typeArgs.head
@@ -17,7 +17,7 @@ trait OptionSerializer[Output] extends NullHandlingSerializer[Option[_], Output]
     if (data.isDefined) {
       parentSerializer.serialize(data.get, elementType, output)
     }
-    outputEnd(output)
+    outputEnd(data, output)
   }
 
 }

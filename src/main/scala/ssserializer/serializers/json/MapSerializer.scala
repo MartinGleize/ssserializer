@@ -2,7 +2,8 @@ package ssserializer.serializers.json
 
 import java.io.BufferedWriter
 
-class MapSerializer extends ssserializer.serializers.generic.MapSerializer[BufferedWriter] with NullHandlingSerializer[Map[_, _]] {
+class MapSerializer extends ssserializer.serializers.generic.MapSerializer[BufferedWriter]
+  with NullHandlingSerializer[Map[_, _]] {
 
   /** Happens at the very start, before any (key,value) pair is serialized */
   override def outputStart(w: BufferedWriter): Unit = {

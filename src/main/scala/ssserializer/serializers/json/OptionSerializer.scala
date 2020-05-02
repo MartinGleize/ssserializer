@@ -9,7 +9,7 @@ class OptionSerializer extends ssserializer.serializers.generic.OptionSerializer
   }
 
   /** Happens after the value of the option has been serialized */
-  override def outputEnd(w: Writer): Unit = {
+  override def outputEnd(option: Option[_], w: Writer): Unit = {
     w.write("]")
   }
 }

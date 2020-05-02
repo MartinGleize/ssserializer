@@ -10,7 +10,8 @@ import scala.reflect.runtime.universe
  * Case class serializer. A current limitation is that it doesn't handle inner case classes (which could typically be
  * considered standalone classes in most cases).
  */
-class CaseClassSerializer extends ssserializer.serializers.generic.CaseClassSerializer[BufferedWriter] with NullHandlingSerializer[Product] {
+class CaseClassSerializer extends ssserializer.serializers.generic.CaseClassSerializer[BufferedWriter]
+  with NullHandlingSerializer[Product] {
 
   /** Happens before any element of the product is serialized */
   override def outputStart(w: BufferedWriter): Unit = {
