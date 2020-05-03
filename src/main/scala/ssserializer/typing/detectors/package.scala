@@ -11,6 +11,8 @@ package object detectors {
 
   val refDetector: Detector = Detector.ofExactBaseType(typeOf[AnyRef])
 
+  val valDetector: Detector = Detector.ofExactBaseType(typeOf[AnyVal])
+
   /*########### VALUE TYPES ##############*/
 
   val doubleDetector: Detector = _ =:= typeOf[Double]

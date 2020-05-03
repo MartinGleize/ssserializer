@@ -9,12 +9,9 @@ import ssserializer.typing.Detector
 import ssserializer.typing.detectors._
 
 class DependencyWritingSerializer(val memory: CompactJsonMemory) extends MasterSerializer[BufferedWriter] {
-  /** Pairs of a detector and the serializer supporting the type it detects. */
+  /** Writes the value types as normal, and the index in memory for the ref types */
   override val serializers: Seq[(Detector, ssserializer.serializers.Serializer[BufferedWriter])] = Seq(
-    doubleDetector -> new ToStringSerializer(),
-    longDetector -> new ToStringSerializer(),
-    intDetector -> new ToStringSerializer(),
-    booleanDetector -> new ToStringSerializer(),
+    valDetector -> new ToStringSerializer(),
     anyDetector -> new RefWritingSerializer()
   )
 }

@@ -4,13 +4,10 @@ import ssserializer.serializers.MasterSerializer
 import ssserializer.typing.Detector
 import ssserializer.typing.detectors._
 
-import scala.reflect.runtime.universe
-import scala.reflect.runtime.universe._
-
 class RefTraversalSerializer extends MasterSerializer[CompactJsonMemory] {
 
   override val serializers: Seq[(Detector, ssserializer.serializers.Serializer[CompactJsonMemory])] = Seq(
-    Detector.ofExactBaseType(typeOf[AnyVal]) -> new IgnoreTraversalSerializer(),
+    valDetector -> new IgnoreTraversalSerializer(),
     stringDetector -> new PrimitiveRefTraversalSerializer(),
     optionDetector -> new OptionTraversalSerializer(),
     arrayDetector -> new IteratorTraversalSerializer[Array[_]]() {
@@ -20,15 +17,13 @@ class RefTraversalSerializer extends MasterSerializer[CompactJsonMemory] {
     seqDetector[Seq[_]] -> new SeqTraversalSerializer[Seq[_]](),
     setDetector -> new SeqTraversalSerializer[Set[_]],
     mapDetector -> new MapTraversalSerializer(),
-    tupleDetector -> null, //new TupleTraversalSerializer(),
+    tupleDetector -> new TupleTraversalSerializer(),
     caseClassDetector -> new CaseClassTraversalSerializer()
   )
 
   class SeqTraversalSerializer[S <: Iterable[_]] extends ssserializer.serializers.generic.SeqSerializer[S, CompactJsonMemory]
     with IteratorTraversalSerializer[S]
 
-  /*
   class TupleTraversalSerializer extends ssserializer.serializers.generic.TupleSerializer[CompactJsonMemory]
     with IteratorTraversalSerializer[Product]
-  */
 }

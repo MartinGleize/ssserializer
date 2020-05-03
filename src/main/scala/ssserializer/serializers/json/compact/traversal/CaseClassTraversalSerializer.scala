@@ -6,6 +6,6 @@ class CaseClassTraversalSerializer extends ssserializer.serializers.generic.Case
 
   override def outputStart(output: CompactJsonMemory): Unit = ()
   override def outputEnd(output: CompactJsonMemory): Unit = ()
-  override def outputBeforeProductArg(argName: String, argType: universe.Type, output: CompactJsonMemory): Unit = ()
+  override def outputBeforeProductArg(argName: String, argIndex: Int, argType: universe.Type, output: CompactJsonMemory): Unit = ()
   override def outputAfterProductArg(arg: Any, argType: universe.Type, output: CompactJsonMemory, hasNextProductArg: Boolean): Unit = ()
 }

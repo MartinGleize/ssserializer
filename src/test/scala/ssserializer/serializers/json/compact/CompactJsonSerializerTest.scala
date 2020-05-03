@@ -24,9 +24,30 @@ class CompactJsonSerializerTest extends UnitSpec {
     "[[{\"k\":1,\"v\":2},{\"k\":3,\"v\":4},{\"k\":5,\"v\":6}],\"key1\",[11,12],\"key2\",[21,22,23],\"\",null]"
   )
 
-  "A CompactJsonSerializer" should "correct serialize simple map objects" in {
-    for ((map, expected) <- TestObjects.mapTests.zip(expectedSerializationsMaps)) {
-      serialize(map) should be (expected)
+  /*
+  val tuple3Tests: Seq[(String, Option[Int], Person)] = Seq(
+    null,
+    (null: String, null, null),
+    ("", None, null),
+    ("haha", Some(3), Person("John", 20))
+  )
+   */
+  val expectedSerializationTuples = Seq(
+    "[null]",
+    "[[1,1,1],null]",
+    "[[1,2,3],\"\",[],null]",
+    "[[1,2,3],\"haha\",[3],{\"0\":4,\"1\":20},\"John\"]"
+  )
+
+  "A CompactJsonSerializer" should "correctly serialize simple map objects" in {
+    for ((testCase, expected) <- TestObjects.mapTests.zip(expectedSerializationsMaps)) {
+      serialize(testCase) should be (expected)
+    }
+  }
+
+  "A CompactJsonSerializer" should "correctly serialize composite objects with tuples and options" in {
+    for ((testCase, expected) <- TestObjects.tuple3Tests.zip(expectedSerializationTuples)) {
+      serialize(testCase) should be (expected)
     }
   }
 

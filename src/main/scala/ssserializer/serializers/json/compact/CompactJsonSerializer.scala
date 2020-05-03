@@ -4,13 +4,19 @@ import java.io.BufferedWriter
 
 import ssserializer.serializers.json.JsonSerializer
 import ssserializer.serializers.json.compact.traversal.{CompactJsonMemory, RefTraversalSerializer}
-import ssserializer.serializers.json.compact.writing.{DependencyWritingSerializer, NullWritingSerializer}
+import ssserializer.serializers.json.compact.writing.{CompactCaseClassSerializer, DependencyWritingSerializer, NullWritingSerializer}
 import ssserializer.serializers.{MasterSerializer, Serializer}
 import ssserializer.typing.Detector
-import ssserializer.typing.detectors.anyDetector
+import ssserializer.typing.detectors.{anyDetector, caseClassDetector}
 
 import scala.reflect.runtime.universe._
 
+/**
+ * A JSON serializer. Produces a memory-efficient representation (a single reference is serialized only once).
+ * Proceeds in two passes:
+ * First pass traverses the object to serialize for all the references it depends on.
+ * Second pass writes the list of these references as a JSON array.
+ */
 class CompactJsonSerializer extends MasterSerializer[BufferedWriter] {
 
   private val refTraversal = new RefTraversalSerializer()
@@ -44,8 +50,11 @@ class CompactJsonSerializer extends MasterSerializer[BufferedWriter] {
   /** Pairs of a detector and the serializer supporting the type it detects. */
   override val serializers: Seq[(Detector, Serializer[BufferedWriter])] = {
     val usualJsonSerializers = new JsonSerializer().serializers
+      .filter { case (detector, _) => detector != caseClassDetector }
+    // we replace the CaseClassSerializer with a more character-efficient version
+    val caseClassSerializer = caseClassDetector -> new CompactCaseClassSerializer()
     // we need this because we have an untyped (Any) null pointer this time, common to all types
     val nullFailsafe = anyDetector -> new NullWritingSerializer()
-    usualJsonSerializers :+ nullFailsafe
+    usualJsonSerializers :+ caseClassSerializer :+ nullFailsafe
   }
 }

@@ -24,7 +24,7 @@ class CaseClassSerializer extends ssserializer.serializers.generic.CaseClassSeri
   }
 
   /** Happens before each element of the product gets serialized: it's a good occasion to output the name of the element usually */
-  override def outputBeforeProductArg(argName: String, argType: universe.Type, w: BufferedWriter): Unit = {
+  override def outputBeforeProductArg(argName: String, argIndex: Int, argType: universe.Type, w: Writer): Unit = {
     val jsonifiedArgName = jsonifyArgName(argName)
     w.write("\"" + jsonifiedArgName + "\":")
   }

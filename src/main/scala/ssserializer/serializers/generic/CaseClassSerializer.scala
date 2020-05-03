@@ -2,6 +2,7 @@ package ssserializer.serializers.generic
 
 import ssserializer.serializers.MasterSerializer
 
+import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 /**
@@ -17,7 +18,7 @@ trait CaseClassSerializer[Output] extends NullHandlingSerializer[Product, Output
   def outputEnd(output: Output): Unit
 
   /** Happens before each element of the product gets serialized: it's a good occasion to output the name of the element usually */
-  def outputBeforeProductArg(argName: String, argType: Type, output: Output): Unit
+  def outputBeforeProductArg(argName: String, argIndex: Int, argType: universe.Type, output: Output): Unit
 
   /** Happens after an element of the product has been serialized */
   def outputAfterProductArg(arg: Any, argType: Type, output: Output, hasNextProductArg: Boolean): Unit
@@ -31,7 +32,7 @@ trait CaseClassSerializer[Output] extends NullHandlingSerializer[Product, Output
     for ((arg, index) <- productArgs.zipWithIndex) {
       val argName = orderedArgs(index)._1.toString
       val argType = orderedArgs(index)._2
-      outputBeforeProductArg(argName, argType, output)
+      outputBeforeProductArg(argName, index, argType, output)
       parentSerializer.serialize(arg, argType, output)
       outputAfterProductArg(arg, argType, output, index != size - 1)
     }

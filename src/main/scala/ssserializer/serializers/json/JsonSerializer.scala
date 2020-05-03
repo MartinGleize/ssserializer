@@ -6,6 +6,9 @@ import ssserializer.serializers.MasterSerializer
 import ssserializer.typing.Detector
 import ssserializer.typing.detectors._
 
+/**
+ * A JSON serializer. Produces human-readable JSON.
+ */
 class JsonSerializer extends MasterSerializer[BufferedWriter] {
 
   override val serializers: Seq[(Detector, ssserializer.serializers.Serializer[BufferedWriter])] = Seq(
