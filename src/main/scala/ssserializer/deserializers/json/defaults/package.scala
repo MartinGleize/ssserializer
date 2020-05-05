@@ -1,24 +1,30 @@
 package ssserializer.deserializers.json
 
+import ssserializer.deserializers.json.parsing.JsonReader
+
 package object defaults {
 
-  val doubleDeserializer: NumberStringDeserializer[Double] = _.toDouble
+  def doubleDeserializer[JsonInput <: JsonReader]: NumberStringDeserializer[Double, JsonInput] = _.toDouble
 
-  val longDeserializer: NumberStringDeserializer[Long] = _.toLong
+  def longDeserializer[JsonInput <: JsonReader]: NumberStringDeserializer[Long, JsonInput] = _.toLong
 
-  val intDeserializer: NumberStringDeserializer[Int] = _.toInt
+  def intDeserializer[JsonInput <: JsonReader]: NumberStringDeserializer[Int, JsonInput] = _.toInt
 
-  val booleanDeserializer: StringParseDeserializer[Boolean] = new StringParseDeserializer[Boolean] {
-    override def read(jsonReader: parsing.JsonReader): String = jsonReader.readJsonBoolean()
+  def booleanDeserializer[JsonInput <: JsonReader]: StringParseDeserializer[Boolean, JsonInput] = {
+    new StringParseDeserializer[Boolean, JsonInput] {
+      override def read(jsonReader: JsonInput): String = jsonReader.readJsonBoolean()
 
-    override def parse(stringResult: String): Boolean = stringResult.toBoolean
+      override def parse(stringResult: String): Boolean = stringResult.toBoolean
+    }
   }
 
-  val stringDeserializer: StringParseDeserializer[String] = new StringDeserializer()
+  def stringDeserializer[JsonInput <: JsonReader]: StringParseDeserializer[String, JsonInput] = {
+    new StringDeserializer()
+  }
 
-  val seqDeserializer: SeqDeserializer[Seq[_]] = _.toList
+  val seqDeserializer: SeqDeserializer[Seq[_], JsonReader] = (elts, _) => elts.toList
 
-  val setDeserializer: SeqDeserializer[Set[_]] = _.toSet
+  val setDeserializer: SeqDeserializer[Set[_], JsonReader] = (elts, _) => elts.toSet
 
-  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], parsing.JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
+  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
 }

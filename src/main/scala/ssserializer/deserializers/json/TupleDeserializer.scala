@@ -1,17 +1,20 @@
 package ssserializer.deserializers.json
 
-import scala.collection.mutable
+import ssserializer.deserializers.json.parsing.JsonReader
+
 import scala.reflect.runtime.universe
 
 /**
  * A JSON deserializer for tuples of all arities. The dynamic product construction from CaseClassDeserialization is re-used,
  * combined with a mixin to the JSON array reading of SeqDeserializer.
  */
-class TupleDeserializer extends CaseClassDeserializer with SeqDeserializer[Product] {
+class TupleDeserializer[JsonInput <: JsonReader] extends CaseClassDeserializer[JsonInput] with SeqDeserializer[Product, JsonInput] {
 
   override def typeIterator(t: universe.Type): Iterator[universe.Type] = t.typeArgs.iterator
 
-  override def constructFinalObject(elements: mutable.Seq[Any], t: universe.Type): Product = newProduct(t, elements.toSeq)
+  override def buildFinalObject(elements: Seq[Any], t: universe.Type, jsonReader: JsonInput): Product = {
+    newProduct(t, elements, jsonReader)
+  }
 
-  override def constructFinalObject(elements: mutable.Seq[Any]): Product = throw new RuntimeException("Should not be called")
+  override def buildFinalObject(elements: Seq[Any], jsonInput: JsonInput): Product = throw new RuntimeException("Should not be called")
 }

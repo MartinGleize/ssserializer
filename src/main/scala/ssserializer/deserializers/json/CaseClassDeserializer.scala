@@ -2,10 +2,11 @@ package ssserializer.deserializers.json
 
 import java.util
 
+import ssserializer.deserializers.json.parsing.JsonReader
+
 import scala.collection.JavaConversions._
 import ssserializer.deserializers.{DeserializationException, MasterDeserializer}
 import ssserializer.serializers.generic.CaseClassSerializer
-import ssserializer.serializers.json.CaseClassSerializer
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -17,15 +18,15 @@ import scala.reflect.runtime.universe._
  *
  * Does not handle inner case classes for the moment (likely won't ever support it)
  */
-class CaseClassDeserializer extends Deserializer[Product] {
+class CaseClassDeserializer[JsonInput <: JsonReader] extends NullHandlingDeserializer[Product, JsonInput] {
 
   /** Cache for the parameters of case class types */
   private val cacheParameters: mutable.Map[Type, Seq[(String, Type)]] = new util.IdentityHashMap[Type, Seq[(String, Type)]]()
   /** Cache for the reflected constructor of case class types */
-  private val cacheConstructor: mutable.Map[Type, ReflectionHelpers.CaseClassFactory[Product]] =
+  protected val cacheConstructor: mutable.Map[Type, ReflectionHelpers.CaseClassFactory[Product]] =
     new util.IdentityHashMap[Type, ReflectionHelpers.CaseClassFactory[Product]]()
 
-  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Product = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Product = {
     val orderedArgs = cacheParameters.getOrElseUpdate(t, {
       val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
       parameterSymbols.map(s => s.name.toString -> s.info)
@@ -44,10 +45,10 @@ class CaseClassDeserializer extends Deserializer[Product] {
     }
     jsonReader.skipAfter(parsing.JsonReader.CURLY_CLOSE)
     // build the case class object with this list of arguments
-    newProduct(t, args)
+    newProduct(t, args, jsonReader)
   }
 
-  def newProduct(t: Type, args: Seq[_]): Product = {
+  def newProduct(t: Type, args: Seq[_], input: JsonInput): Product = {
     val productFactory = cacheConstructor.getOrElseUpdate(t, new ReflectionHelpers.CaseClassFactory[Product](t))
     val res = productFactory.buildWith(args)
     res

@@ -2,9 +2,9 @@ package ssserializer.deserializers.json
 
 import ssserializer.deserializers.json.parsing.JsonReader
 
-class StringDeserializer extends StringParseDeserializer[String] {
+class StringDeserializer[JsonInput <: JsonReader] extends StringParseDeserializer[String, JsonInput] {
 
-  override def read(jsonReader: JsonReader): String = {
+  override def read(jsonReader: JsonInput): String = {
     // return the next Json String value (with enclosing ", but unescaped)
     jsonReader.readJsonString()
   }

@@ -1,5 +1,7 @@
 package ssserializer.deserializers.json
 
+import ssserializer.deserializers.json.parsing.JsonReader
+
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
 
@@ -9,14 +11,17 @@ import scala.collection.mutable
  * @param factory a suitable CanBuildFrom to build the target collection type
  * @tparam CC deserialized collection type
  */
-class IterableOpsDeserializer[CC[A] <: Iterable[A]](implicit factory: CanBuildFrom[Nothing, Any, CC[Any]]) extends SeqDeserializer[CC[Any]] {
-  override def constructFinalObject(elements: mutable.Seq[Any]): CC[Any] = {
+class IterableOpsDeserializer[CC[A] <: Iterable[A], JsonInput <: JsonReader](implicit factory: CanBuildFrom[Nothing, Any, CC[Any]])
+  extends SeqDeserializer[CC[Any], JsonInput] {
+
+  override def buildFinalObject(elements: Seq[Any], jsonReader: JsonInput): CC[Any] = {
     val builder = factory()
     for (elt <- elements) {
       builder += elt
     }
     builder.result()
   }
+
 }
 
 

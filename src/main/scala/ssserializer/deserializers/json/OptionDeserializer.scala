@@ -1,11 +1,16 @@
 package ssserializer.deserializers.json
 import ssserializer.deserializers.MasterDeserializer
+import ssserializer.deserializers.json.parsing.JsonReader
 
 import scala.reflect.runtime.universe._
 
-class OptionDeserializer extends Deserializer[Option[_]] {
+class OptionDeserializer[JsonInput <: JsonReader] extends NullHandlingDeserializer[Option[_], JsonInput] {
 
-  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Option[_] = {
+  def buildFinalOption(element: Any, jsonInput: JsonInput): Option[_] = {
+    Some(element)
+  }
+
+  override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Option[_] = {
     val elementType = t.typeArgs.head
     jsonReader.skipAfter(parsing.JsonReader.BRACKET_OPEN)
     if (jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)) {
@@ -13,7 +18,7 @@ class OptionDeserializer extends Deserializer[Option[_]] {
     } else {
       val res = parentDeserializer.deserialize(elementType, jsonReader)
       jsonReader.skipAfter(parsing.JsonReader.BRACKET_CLOSE)
-      Some(res)
+      buildFinalOption(res, jsonReader)
     }
   }
 

@@ -45,7 +45,7 @@ class CompactJsonSerializerTest extends UnitSpec {
     }
   }
 
-  "A CompactJsonSerializer" should "correctly serialize composite objects with tuples and options" in {
+  it should "correctly serialize composite objects with tuples and options" in {
     for ((testCase, expected) <- TestObjects.tuple3Tests.zip(expectedSerializationTuples)) {
       serialize(testCase) should be (expected)
     }

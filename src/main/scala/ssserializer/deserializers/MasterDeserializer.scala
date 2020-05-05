@@ -17,11 +17,10 @@ trait MasterDeserializer[Input] extends Deserializer[Any, Input] {
   /** Maps the types to the correct deserializers. */
   val typeMapper = new TypeMapper[Deserializer[_, Input]]
 
-  override def deserialize(t: Type, src: Input, parentDeserializer: MasterDeserializer[Input] = null): Any = {
+  override def deserialize(t: Type, src: Input, parentDeserializer: MasterDeserializer[Input] = this): Any = {
     // TODO: throw some custom exception for non-handled type
-    // TODO: throw some internal dev-only exception for parentDeserializer not being null on this call
     val (deserializer, dealiasedType) = typeMapper.map(t, deserializers).getOrElse(throw new RuntimeException("Type not handled: " + t))
-    deserializer.deserialize(dealiasedType, src, this)
+    deserializer.deserialize(dealiasedType, src, parentDeserializer)
   }
 
 }

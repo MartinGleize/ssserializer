@@ -1,15 +1,14 @@
 package ssserializer.deserializers.json
 
 import ssserializer.deserializers.MasterDeserializer
+import ssserializer.deserializers.json.parsing.JsonReader
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
-trait SeqDeserializer[S] extends Deserializer[S] {
+trait SeqDeserializer[S, JsonInput <: JsonReader] extends NullHandlingDeserializer[S, JsonInput] {
 
-  //TODO: might be able to use Factory or BuildFrom type of implicits here to ease the implementation */
-  def constructFinalObject(elements: mutable.Seq[Any]): S
+  def buildFinalObject(elements: Seq[Any], jsonInput: JsonInput): S
 
   /** Returns a companion iterator of the types of each element in the sequence-like data
    * In practice for most sequences, it will continually return the one type parameter,
@@ -17,31 +16,41 @@ trait SeqDeserializer[S] extends Deserializer[S] {
    * */
   def typeIterator(t: Type): Iterator[Type] = Iterator.continually(t.typeArgs.head)
 
-  override def deserializeNonNull(t: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): S = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): S = {
     val typeIt = typeIterator(t)
     jsonReader.skipAfter(parsing.JsonReader.BRACKET_OPEN)
     val res = new ArrayBuffer[Any]()
     var potentialElement: Option[Any] = null
-    while (typeIt.hasNext && {potentialElement = deserializeNextElement(typeIt.next(), jsonReader, parentDeserializer); potentialElement.isDefined}) {
+    while ({potentialElement = deserializeNextElement(typeIt, jsonReader, parentDeserializer); potentialElement.isDefined}) {
       val element = potentialElement.get
       res += element
     }
-    // TODO: this is where we would change things to construct objects of precise subclasses like List vs Vector
-    constructFinalObject(res, t)
+    // this is where we would change things to construct objects of precise subclasses like List vs Vector
+    buildFinalObject(res, t, jsonReader)
   }
 
-  def deserializeNextElement(elementType: Type, jsonReader: parsing.JsonReader, parentDeserializer: MasterDeserializer[parsing.JsonReader]): Option[Any] = {
-    // first try to look for the end of the JSON array
-    if (jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)) {
-      None
+  def deserializeNextElement(typeIterator: Iterator[Type], jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Option[Any] = {
+    // check that we still have valid types to associate to the elements
+    if (typeIterator.hasNext) {
+      val elementType = typeIterator.next()
+      // first try to look for the end of the JSON array
+      if (jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)) {
+        None
+      } else {
+        // can't read a "]" so a new element can be read
+        val element = parentDeserializer.deserialize(elementType, jsonReader)
+        // try to read a "," after (if it fails it likely means this would be the last element)
+        jsonReader.tryToConsumeToken(parsing.JsonReader.COMMA)
+        Some(element)
+      }
     } else {
-      // can't read a "]" so a new element can be read
-      val element = parentDeserializer.deserialize(elementType, jsonReader)
-      // try to read a "," after (if it fails it likely means this would be the last element)
-      jsonReader.tryToConsumeToken(parsing.JsonReader.COMMA)
-      Some(element)
+      // we didn't have any valid type left, we still have to try to read the end character to close the sequence properly
+      jsonReader.tryToConsumeToken(parsing.JsonReader.BRACKET_CLOSE)
+      None
     }
   }
 
-  def constructFinalObject(elements: mutable.Seq[Any], t: Type): S = constructFinalObject(elements)
+  def buildFinalObject(elements: Seq[Any], t: Type, jsonInput: JsonInput): S = {
+    buildFinalObject(elements, jsonInput)
+  }
 }
