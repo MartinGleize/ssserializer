@@ -1,8 +1,11 @@
 package ssserializer.serializers.json.compact.traversal
 
 import ssserializer.serializers.MasterSerializer
+import ssserializer.serializers.json.compact.writing.NullWritingSerializer
 import ssserializer.typing.Detector
-import ssserializer.typing.detectors._
+import ssserializer.typing.detectors.{anyDetector, _}
+
+import scala.reflect.runtime.universe
 
 class RefTraversalSerializer extends MasterSerializer[CompactJsonMemory] {
 
@@ -19,6 +22,14 @@ class RefTraversalSerializer extends MasterSerializer[CompactJsonMemory] {
     mapDetector -> new MapTraversalSerializer(),
     tupleDetector -> new TupleTraversalSerializer(),
     caseClassDetector -> new CaseClassTraversalSerializer()
+    /*
+    anyDetector -> new NullHandlingTraversalSerializer[Any] {
+      override def serializeNonNull(data: Any, t: universe.Type, output: CompactJsonMemory, parentSerializer: MasterSerializer[CompactJsonMemory]): Unit = {
+        // this means 'data' wasn't actually null so the serializer couldn't handle the type
+        throw new RuntimeException("Writing of type not handled: " + t)
+      }
+    }
+    */
   )
 
   class SeqTraversalSerializer[S <: Iterable[_]] extends ssserializer.serializers.generic.SeqSerializer[S, CompactJsonMemory]
