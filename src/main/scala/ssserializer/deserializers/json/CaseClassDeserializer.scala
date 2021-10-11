@@ -27,6 +27,9 @@ class CaseClassDeserializer[JsonInput <: JsonReader] extends NullHandlingDeseria
     new util.IdentityHashMap[Type, ReflectionHelpers.CaseClassFactory[Product]]()
 
   override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Product = {
+    // map type params (like "A") to actual type arguments
+    val typeMap = CaseClassSerializer.genericTypeMap(t)
+    // get args of the case class constructor
     val orderedArgs = cacheParameters.getOrElseUpdate(t, {
       val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
       parameterSymbols.map(s => s.name.toString -> s.info)
@@ -37,7 +40,8 @@ class CaseClassDeserializer[JsonInput <: JsonReader] extends NullHandlingDeseria
       // ignore the name of the parameter (but we could check it in theory)
       jsonReader.readJsonName()
       // read the value
-      val arg = parentDeserializer.deserialize(argType, jsonReader)
+      val actualArgType = typeMap.getOrElse(argType.typeSymbol, argType)
+      val arg = parentDeserializer.deserialize(actualArgType, jsonReader)
       args += arg
       // read the separating comma
       if (index < orderedArgs.size - 1)

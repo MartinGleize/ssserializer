@@ -54,6 +54,8 @@ package object detectors {
   }
 
   val caseClassDetector: Detector = (t) => {
-    t.typeSymbol.asClass.isCaseClass && !t.erasure.baseClasses.exists(symbol => symbol.fullName.contains("Tuple"))
+    t.typeSymbol.isClass &&
+      t.typeSymbol.asClass.isCaseClass &&
+      !t.erasure.baseClasses.exists(symbol => symbol.fullName.contains("Tuple"))
   }
 }

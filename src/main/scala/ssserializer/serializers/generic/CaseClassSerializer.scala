@@ -24,14 +24,19 @@ trait CaseClassSerializer[Output] extends NullHandlingSerializer[Product, Output
   def outputAfterProductArg(arg: Any, argType: Type, output: Output, hasNextProductArg: Boolean): Unit
 
   override def serializeNonNull(product: Product, t: Type, output: Output, parentSerializer: MasterSerializer[Output]): Unit = {
+    // map type params (like "A") to actual type arguments
+    val typeMap = CaseClassSerializer.genericTypeMap(t)
+    // get the case class arguments
     val parameterSymbols = CaseClassSerializer.parameterSymbols(t)
     val orderedArgs = parameterSymbols.map(s => s.name -> s.info)
     val productArgs = product.productIterator.toList
     val size = productArgs.size
+    // serialize
     outputStart(output)
     for ((arg, index) <- productArgs.zipWithIndex) {
       val argName = orderedArgs(index)._1.toString
-      val argType = orderedArgs(index)._2
+      val paramType = orderedArgs(index)._2
+      val argType = typeMap.getOrElse(paramType.typeSymbol, paramType)
       outputBeforeProductArg(argName, index, argType, output)
       parentSerializer.serialize(arg, argType, output)
       outputAfterProductArg(arg, argType, output, index != size - 1)
@@ -59,4 +64,9 @@ object CaseClassSerializer {
       .filter(m => accessorNames.contains(m.name.toString.trim))
   }
 
+  def genericTypeMap(caseClassType: Type): Map[Symbol, Type] = {
+    val genericTypeSymbols = caseClassType.typeSymbol.typeSignature.typeParams
+    val actualTypes = caseClassType.typeArgs
+    Map(genericTypeSymbols.zip(actualTypes):_*)
+  }
 }

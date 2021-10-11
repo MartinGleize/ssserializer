@@ -3,7 +3,7 @@ package ssserializer
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream, OutputStream}
 
 import org.scalatest.Assertion
-import ssserializer.TestObjects.{arrayAnyTests, arrayIntTests, arrayStringTests, booleanTests, caseClassDefaultParameterTests, caseClassMoreTests, caseClassTests, caseClassWithExtraValues, doubleTests, intTests, listTests, mapTests, optionTests, sequenceTests, setTests, stringTests, tuple2Tests, tuple3Tests, vectorTests}
+import ssserializer.TestObjects._
 import ssserializer.deserializers.Deserializer
 import ssserializer.serializers.Serializer
 
@@ -31,6 +31,7 @@ abstract class ApiTest(val testSuitName: String)(implicit val serializer: Serial
     caseClassMoreTests.foreach(test(_))
     caseClassDefaultParameterTests.foreach(test(_))
     caseClassWithExtraValues.foreach(test(_))
+    caseClassWithGenericType.foreach(test(_))
     optionTests.foreach(test(_))
     tuple2Tests.foreach(test(_))
     tuple3Tests.foreach(test(_))

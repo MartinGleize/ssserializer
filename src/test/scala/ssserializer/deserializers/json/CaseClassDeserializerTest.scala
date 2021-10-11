@@ -20,3 +20,4 @@ case class EmployedPerson(name: String, hasJob: Boolean = false)
 case class PersonWithExtraValues(name: String, age: Int) {
   val ageIn3Years: Int = age + 3
 }
+case class PersonWithGenericObject[A, B](name: String, o1: B, o2: A)

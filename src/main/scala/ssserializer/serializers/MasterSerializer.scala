@@ -21,7 +21,8 @@ trait MasterSerializer[Output] extends Serializer[Output] {
 
   override def serialize(data: Any, t: Type, dest: Output, parentSerializer: MasterSerializer[Output] = this): Unit = {
     // TODO: throw some custom exception for non-handled type
-    val (serializer, dealiasedType) = typeMapper.map(t, serializers).getOrElse(throw new RuntimeException("Type not handled: " + t))
+    val (serializer, dealiasedType) = typeMapper.map(t, serializers)
+      .getOrElse(throw new RuntimeException("Type not handled: " + t))
     // parentSerializer will deal with the dependencies, by default it's the same MasterSerializer
     serializer.serialize(data, dealiasedType, dest, parentSerializer)
   }
