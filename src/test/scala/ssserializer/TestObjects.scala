@@ -90,8 +90,8 @@ object TestObjects {
   )
 
   val caseClassWithGenericType: Seq[PersonWithGenericObject[Int, String]] = Seq(
-    PersonWithGenericObject[Int, String]("John", "nice", 0),
-    PersonWithGenericObject[Int, String]("Mary", "cool", 1)
+    PersonWithGenericObject("John", "nice", 0),
+    PersonWithGenericObject("Mary", "cool", 1)
   )
 
   val optionTests: Seq[Option[String]] = Seq(
