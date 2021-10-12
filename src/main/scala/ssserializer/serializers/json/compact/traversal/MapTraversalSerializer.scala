@@ -5,7 +5,7 @@ class MapTraversalSerializer extends ssserializer.serializers.generic.MapSeriali
 
   override def outputStart(output: CompactJsonMemory): Unit = ()
   override def outputEnd(output: CompactJsonMemory): Unit = ()
-  override def outputBeforeKey(output: CompactJsonMemory): Unit = ()
+  override def outputBeforeKey(output: CompactJsonMemory, isFirstEntry: Boolean): Unit = ()
   override def outputBeforeValue(output: CompactJsonMemory): Unit = ()
-  override def outputAfterValue(output: CompactJsonMemory, hasNextEntry: Boolean): Unit = ()
+  override def outputAfterValue(output: CompactJsonMemory): Unit = ()
 }

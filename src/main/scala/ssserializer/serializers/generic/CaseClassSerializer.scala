@@ -51,7 +51,7 @@ object CaseClassSerializer {
   def parameterSymbols(caseClass: Type): Seq[Symbol] = {
     // get exclusively the "case accessors", i.e. the accessors automatically created for the parameters of the main constructor
     val caseAccessors = caseClass.members.sorted
-      .filter(_.isInstanceOf[MethodSymbol])
+      .filter(_.isMethod)
       .map(_.asInstanceOf[MethodSymbol])
       .filter(_.isCaseAccessor)
     // build a set of all their names

@@ -16,7 +16,10 @@ class MapSerializer extends ssserializer.serializers.generic.MapSerializer[Buffe
   }
 
   /** Happens before each (key,value) pair is serialized */
-  override def outputBeforeKey(w: BufferedWriter): Unit = {
+  override def outputBeforeKey(w: BufferedWriter, isFirstEntry: Boolean): Unit = {
+    if (!isFirstEntry) {
+      w.write(",")
+    }
     w.write("{\"k\":")
   }
 
@@ -26,11 +29,8 @@ class MapSerializer extends ssserializer.serializers.generic.MapSerializer[Buffe
   }
 
   /** Happens after the value of a (key,value) pair is serialized */
-  override def outputAfterValue(w: BufferedWriter, hasNextEntry: Boolean): Unit = {
+  override def outputAfterValue(w: BufferedWriter): Unit = {
     w.write("}")
-    if (hasNextEntry) {
-      w.write(",")
-    }
   }
 
 }
