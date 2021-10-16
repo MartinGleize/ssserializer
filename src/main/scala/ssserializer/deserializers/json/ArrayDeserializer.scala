@@ -5,11 +5,11 @@ import ssserializer.deserializers.json.parsing.JsonReader
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
-class ArrayDeserializer[JsonInput <: JsonReader] extends SeqDeserializer[Array[Any], JsonInput] {
+class ArrayDeserializer[JsonInput <: JsonReader] extends SeqDeserializer[Array[_], JsonInput] {
 
-  override def buildFinalObject(elements: Seq[Any], t: Type, jsonInput: JsonInput): Array[Any] = {
+  override def buildFinalObject(elements: Seq[Any], t: Type, jsonInput: JsonInput): Array[_] = {
     // use a class tag to create the correct type of array
-    elements.toArray(typeToClassTag(t))
+    elements.toArray(typeToClassTag(t.typeArgs.head))
   }
 
   /** Converts the type information to a class tag */
