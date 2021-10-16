@@ -106,13 +106,19 @@ class CaseClassDeserializer[JsonInput <: JsonReader] extends NullHandlingDeseria
         } catch {
           case iae: IllegalArgumentException => {
             val expectedParameterLists = defaultConstructor.paramLists.toString
-            val actualArguments = args.toString()
+            val actualArgumentTypes = args.map(_.getClass)
+            val actualArgumentValues = args.toString()
             throw new DeserializationException(
-              "Expected one of these lists of parameters:" + "\n" +
-              expectedParameterLists + "\n" +
-              "Got these parameters instead:" + "\n" +
-              actualArguments
-              , tpe)
+              "Expected one of these lists of parameters: \n" +
+                expectedParameterLists + "\n" +
+                "Got these parameter types instead: \n" +
+                actualArgumentTypes + "\n" +
+                "With values: \n" +
+                actualArgumentValues + "\n" +
+                "Original IllegalArgumentException: \n" +
+                iae,
+              tpe
+            )
           }
         }
       }

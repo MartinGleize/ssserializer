@@ -4,6 +4,7 @@ import ssserializer.deserializers.json.parsing.JsonReader
 
 import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable
+import scala.reflect.runtime.universe.Type
 
 /**
  * JSON Deserializer for any seq-like type that's encoded as a JSON array
@@ -14,7 +15,7 @@ import scala.collection.mutable
 class IterableOpsDeserializer[CC[A] <: Iterable[A], JsonInput <: JsonReader](implicit factory: CanBuildFrom[Nothing, Any, CC[Any]])
   extends SeqDeserializer[CC[Any], JsonInput] {
 
-  override def buildFinalObject(elements: Seq[Any], jsonReader: JsonInput): CC[Any] = {
+  override def buildFinalObject(elements: Seq[Any], t: Type, jsonReader: JsonInput): CC[Any] = {
     val builder = factory()
     for (elt <- elements) {
       builder += elt

@@ -22,9 +22,10 @@ package object defaults {
     new StringDeserializer()
   }
 
-  val seqDeserializer: SeqDeserializer[Seq[_], JsonReader] = (elts, _) => elts.toList
+  val seqDeserializer: SeqDeserializer[Seq[_], JsonReader] = (elts, _, _) => elts
 
-  val setDeserializer: SeqDeserializer[Set[_], JsonReader] = (elts, _) => elts.toSet
+  val setDeserializer: SeqDeserializer[Set[_], JsonReader] = (elts, _, _) => elts.toSet
 
-  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], JsonReader] = seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
+  val arrayDeserializer: ssserializer.deserializers.Deserializer[Array[_], JsonReader] =
+    seqDeserializer.convertToDeserializer[Array[_]](_.toArray)
 }

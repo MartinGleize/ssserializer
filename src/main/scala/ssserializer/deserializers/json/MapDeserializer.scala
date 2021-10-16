@@ -7,13 +7,13 @@ import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
 
-class MapDeserializer[JsonInput <: JsonReader] extends NullHandlingDeserializer[Map[_, _], JsonInput] {
+class MapDeserializer[JsonInput <: JsonReader] extends NullHandlingDeserializer[Map[Any, Any], JsonInput] {
 
   def buildFinalMap(keyValuePairs: Seq[(Any, Any)], jsonReader: JsonInput): Map[Any, Any] = {
     immutable.Map(keyValuePairs:_*)
   }
 
-  override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Map[_, _] = {
+  override def deserializeNonNull(t: Type, jsonReader: JsonInput, parentDeserializer: MasterDeserializer[JsonInput]): Map[Any, Any] = {
     val keyType = t.typeArgs(0)
     val valueType = t.typeArgs(1)
     jsonReader.skipAfter(parsing.JsonReader.BRACKET_OPEN)

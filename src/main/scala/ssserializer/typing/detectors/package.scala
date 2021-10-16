@@ -1,5 +1,6 @@
 package ssserializer.typing
 
+import scala.reflect.ClassTag
 import scala.reflect.runtime.universe._
 
 /**

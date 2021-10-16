@@ -14,7 +14,7 @@ class JsonDeserializer extends MasterDeserializer[JsonReader] {
     booleanDetector -> defaults.booleanDeserializer,
     stringDetector -> defaults.stringDeserializer,
     optionDetector -> new OptionDeserializer(),
-    arrayDetector -> defaults.arrayDeserializer,
+    arrayDetector -> new ArrayDeserializer[JsonReader](),
     seqDetector[List[_]] -> new IterableOpsDeserializer[List, JsonReader](),
     seqDetector[Vector[_]] -> new IterableOpsDeserializer[Vector, JsonReader](),
     seqDetector[Seq[_]] -> defaults.seqDeserializer,

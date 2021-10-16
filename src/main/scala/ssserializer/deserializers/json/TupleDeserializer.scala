@@ -15,6 +15,4 @@ class TupleDeserializer[JsonInput <: JsonReader] extends CaseClassDeserializer[J
   override def buildFinalObject(elements: Seq[Any], t: universe.Type, jsonReader: JsonInput): Product = {
     newProduct(t, elements, jsonReader)
   }
-
-  override def buildFinalObject(elements: Seq[Any], jsonInput: JsonInput): Product = throw new RuntimeException("Should not be called")
 }

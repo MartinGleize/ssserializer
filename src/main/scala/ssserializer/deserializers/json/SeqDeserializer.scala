@@ -8,7 +8,7 @@ import scala.reflect.runtime.universe._
 
 trait SeqDeserializer[S, JsonInput <: JsonReader] extends NullHandlingDeserializer[S, JsonInput] {
 
-  def buildFinalObject(elements: Seq[Any], jsonInput: JsonInput): S
+  def buildFinalObject(elements: Seq[Any], t: Type, jsonInput: JsonInput): S
 
   /** Returns a companion iterator of the types of each element in the sequence-like data
    * In practice for most sequences, it will continually return the one type parameter,
@@ -50,7 +50,4 @@ trait SeqDeserializer[S, JsonInput <: JsonReader] extends NullHandlingDeserializ
     }
   }
 
-  def buildFinalObject(elements: Seq[Any], t: Type, jsonInput: JsonInput): S = {
-    buildFinalObject(elements, jsonInput)
-  }
 }
